@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/DirtyCajunRice/PeUD/internal/config"
+	"github.com/DirtyCajunRice/PeUD/internal/database"
 	"github.com/DirtyCajunRice/PeUD/internal/handlers"
 	"github.com/DirtyCajunRice/PeUD/internal/server"
 	"github.com/DirtyCajunRice/PeUD/logger"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 var (
@@ -15,10 +15,15 @@ var (
 )
 
 func main() {
-	cfg := config.CreateConfig()
-	handlerEnv := handlers.Env{
-		Log:    log,
-		Config: cfg,
+	env := handlers.Env{
+		Log: log,
+		Config: &config.Config{
+			APIServer: &config.APIServer{},
+			Database: &database.Database{
+				Log: log,
+			},
+		},
 	}
-	server.CLI(&version, &date, &handlerEnv)
+
+	server.CLI(&version, &date, &env)
 }

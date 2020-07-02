@@ -9,14 +9,15 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func CLI(version, date *string, handlerEnv *handlers.Env) {
+func CLI(version, date *string, Env *handlers.Env) {
 	app := &cli.App{
 		Name:     "PeUD",
 		HelpName: "peud",
 		Version:  *version,
 		Usage:    "Plex Ecosystem User Database",
 		Action: func(c *cli.Context) error {
-			Start(version, date, handlerEnv)
+			// TODO: Add validation for multi-option flags like database type
+			Start(version, date, Env)
 			return nil
 		},
 		Flags: []cli.Flag{
@@ -26,7 +27,7 @@ func CLI(version, date *string, handlerEnv *handlers.Env) {
 				Usage:       "Server listening port",
 				EnvVars:     []string{"SERVER_PORT"},
 				Value:       8888,
-				Destination: &handlerEnv.Config.APIServer.Port,
+				Destination: &Env.Config.APIServer.Port,
 			},
 			&cli.BoolFlag{
 				Name:        "debug",
@@ -34,7 +35,7 @@ func CLI(version, date *string, handlerEnv *handlers.Env) {
 				Usage:       "Enable debug logging",
 				EnvVars:     []string{"DEBUG"},
 				Value:       false,
-				Destination: &handlerEnv.Config.Debug,
+				Destination: &Env.Config.Debug,
 			},
 			&cli.StringFlag{
 				Name:        "address",
@@ -42,13 +43,29 @@ func CLI(version, date *string, handlerEnv *handlers.Env) {
 				Usage:       "Server hostname or IP",
 				EnvVars:     []string{"SERVER_ADDRESS"},
 				Value:       "0.0.0.0",
-				Destination: &handlerEnv.Config.APIServer.Address,
+				Destination: &Env.Config.APIServer.Address,
+			},
+			&cli.StringFlag{
+				Name:        "database-type",
+				Aliases:     []string{"T"},
+				Usage:       "Database Backend",
+				EnvVars:     []string{"DATABASE_TYPE"},
+				Value:       "sqlite",
+				Destination: &Env.Config.Database.Type,
+			},
+			&cli.StringFlag{
+				Name:        "database-name",
+				Aliases:     []string{"t"},
+				Usage:       "Database Name (For sqlite it is the filename)",
+				EnvVars:     []string{"DATABASE_NAME"},
+				Value:       "peud.db",
+				Destination: &Env.Config.Database.Name,
 			},
 		},
 	}
 
 	sort.Sort(cli.FlagsByName(app.Flags))
-	log := handlerEnv.Log
+	log := Env.Log
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)

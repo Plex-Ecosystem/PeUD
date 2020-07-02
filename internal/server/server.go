@@ -42,10 +42,11 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/DirtyCajunRice/PeUD/internal/handlers"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
+
+	"github.com/DirtyCajunRice/PeUD/internal/handlers"
 )
 
 func fileServer(r chi.Router, path string) {
@@ -60,9 +61,9 @@ func fileServer(r chi.Router, path string) {
 	})
 }
 
-func Start(version, date *string, handlerEnv *handlers.Env) {
-	log := handlerEnv.Log
-	config := handlerEnv.Config
+func Start(version, date *string, Env *handlers.Env) {
+	log := Env.Log
+	config := Env.Config
 	router := chi.NewRouter()
 
 	log.Info("Initializing Server")
@@ -73,10 +74,13 @@ func Start(version, date *string, handlerEnv *handlers.Env) {
 
 	versionHandler := handlers.NewVersionHandler(version, date)
 	router.Route("/api/v1", func(r chi.Router) {
-		r.Method(http.MethodGet, "/version", handlers.Handler{Env: handlerEnv, Handle: versionHandler.GetVersion})
+		r.Method(http.MethodGet, "/version", handlers.Handler{Env: Env, Handle: versionHandler.GetVersion})
+		r.Method(http.MethodGet, "/users", handlers.Handler{Env: Env, Handle: handlers.ListUsers})
+		r.Method(http.MethodPost, "/users", handlers.Handler{Env: Env, Handle: handlers.CreateUsers})
 		fileServer(r, "/doc")
 	})
 
+	config.Database.Init()
 	httpAddr := fmt.Sprintf("%s:%d", config.APIServer.Address, config.APIServer.Port)
 	log.Infoln("API server is now listening on", httpAddr)
 	log.Error(http.ListenAndServe(httpAddr, router))

@@ -19,7 +19,7 @@ func NewVersionHandler(version *string, date *string) *VersionHandler {
 
 // GetVersion returns a JSON formatted VersionHandler struct
 func (v *VersionHandler) GetVersion(handlerEnv *Env, w http.ResponseWriter, r *http.Request) {
-	// swagger:route GET /api/v1/version version
+	// swagger:route GET /version version
 	// Outputs the build version and date.
 	// Requires authentication
 	//     Responses:
