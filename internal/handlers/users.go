@@ -12,13 +12,81 @@ import (
 )
 
 func ListUsers(env *Env, w http.ResponseWriter, r *http.Request) {
-	// swagger:route GET /users Users
-	// Returns a list of existing users.
-	//     Responses:
-	//       200:
-	//         Description: Successfully returned the list of users
-	//       500:
-	//         Description: InternalServerError
+	// swagger:operation GET  /users listUsers
+	// Returns a list of existing users
+	// ---
+	// tags:
+	//   - Users
+	// produces:
+	//   - application/json
+	// responses:
+	//   '200':
+	//     description: Success
+	//     schema:
+	//       type: array
+	//       items:
+	//         properties:
+	//           id:
+	//             type: integer
+	//             description: Plex ID
+	//           title:
+	//             type: string
+	//             description: Plex User Title
+	//           username:
+	//             type: string
+	//             description: Plex Username
+	//           email:
+	//             type: string
+	//             description: Plex email
+	//           thumb:
+	//             type: string
+	//             description: Plex Thumbnail URL
+	//           home:
+	//             type: bool
+	//             description: Plex Home User
+	//           allowTuners:
+	//             type: boolean
+	//             description: Allow Tuners
+	//           allowSync:
+	//             type: boolean
+	//             description: Allow Sync
+	//           allowCameraUpload:
+	//             type: boolean
+	//             description: Allow Camera Upload
+	//           allowChannels:
+	//             type: boolean
+	//             description: Allow Using Channels
+	//           allowSubtitleAdmin:
+	//             type: boolean
+	//             description: Allow Subtitle Admin
+	//       example:
+	//         - id: 123123123
+	//           title: user1
+	//           username: user1
+	//           email: user1@gmail.com
+	//           thumb: https://plex.tv/users/asdfasdf/avatar?c=asdfasdf
+	//           home: false
+	//           allowTuners: false
+	//           allowSync: false
+	//           allowCameraUpload: false
+	//           allowChannels: false
+	//           allowSubtitleAdmin: false
+	//         - id: 234234234
+	//           title: user2
+	//           username: user2
+	//           email: user1@gmail.com
+	//           thumb: https://plex.tv/users/asdfasdf/avatar?c=asdfasdf
+	//           home: false
+	//           allowTuners: false
+	//           allowSync: false
+	//           allowCameraUpload: false
+	//           allowChannels: false
+	//           allowSubtitleAdmin: false
+	//   '500':
+	//      description: InternalServerError
+	// x-codeSamples:
+	//   - lang: python3
+	//     source: requests.get("http://127.0.0.1:8888/api/v1/users")
 	logFields := logrus.Fields{
 		"function": "ListUsers",
 	}
@@ -38,15 +106,16 @@ func ListUsers(env *Env, w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateUsers(env *Env, w http.ResponseWriter, r *http.Request) {
-	// swagger:route POST /users Users
-	// Creates users.
-	//     Responses:
-	//       201:
-	//         Description: Successfully created the user(s)
-	//       400:
-	//         Description: Invalid user input
-	//       500:
-	//         Description: InternalServerError
+	// swagger:operation POST  /users createUsers
+	// Create new users
+	// ---
+	// tags:
+	//   - Users
+	// produces:
+	//   - application/json
+	// responses:
+	//   '201':
+	//     description: Created
 	logFields := logrus.Fields{
 		"function": "CreateUsers",
 	}

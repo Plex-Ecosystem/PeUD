@@ -10,28 +10,41 @@
 //
 // there are no TOS at this moment, use at your own risk we take no responsibility
 //
-//     Schemes: http
-//     Host: localhost
-//     BasePath: /api/v1
-//     Version: 0.1.0
-//     License: MIT http://opensource.org/licenses/MIT
-//     Contact: Nicholas St. Germain <nick@cajun.pro> https://cajun.pro
+// ---
+// host: localhost
+// basePath: /api/v1
+// info:
+//   version: 0.1.0
+//   license:
+//     name: MIT
+//     url: http://opensource.org/licenses/MIT
+//   contact:
+//     name: Nicholas St. Germain
+//     email: nick@cajun.pro
+//     url: https://cajun.pro
 //
-//     Consumes:
-//     - application/json
+// tags:
+//   - name: General
+//     description: Generic calls
+//   - name: Users
+//     description: Operations to the user database
 //
-//     Produces:
-//     - application/json
+// consumes:
+//   - application/json
 //
-//     Security:
-//     - api_key:
+// produces:
+//   - application/json
 //
-//     SecurityDefinitions:
-//     api_key:
-//          type: apiKey
-//          name: API_KEY
-//          in: header
-//
+// x-tagGroups:
+//  - name: General
+//    tags:
+//      - General
+//  - name: Users
+//    tags:
+//      - Users
+//  - name: Maintenance
+//    tags:
+//      - maintenance
 // swagger:meta
 package server
 

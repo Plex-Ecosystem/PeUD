@@ -19,14 +19,32 @@ func NewVersionHandler(version *string, date *string) *VersionHandler {
 
 // GetVersion returns a JSON formatted VersionHandler struct
 func (v *VersionHandler) GetVersion(handlerEnv *Env, w http.ResponseWriter, r *http.Request) {
-	// swagger:route GET /version version
-	// Outputs the build version and date.
-	// Requires authentication
-	//     Responses:
-	//       200:
-	//         Description: Success
-	//       500:
-	//         Description: InternalServerError
+	// swagger:operation GET /version Version
+	// Get server version and build date
+	// ---
+	// tags:
+	//   - General
+	// produces:
+	//   - application/json
+	// responses:
+	//   '200':
+	//     description: Success
+	//     schema:
+	//       type: object
+	//       properties:
+	//         date:
+	//           type: string
+	//           description: Server build date
+	//         version:
+	//           type: string
+	//           description: Server version
+	//       example:
+	//         date: 2020-07-03T07:01:59Z
+	//         version: 1.0.0
+	//
+	// x-codeSamples:
+	//   - lang: python3
+	//     source: requests.get("http://127.0.0.1:8888/api/v1/version")
 	log := handlerEnv.Log
 	b, err := json.Marshal(v)
 	if err != nil {
