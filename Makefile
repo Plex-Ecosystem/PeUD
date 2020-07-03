@@ -30,7 +30,7 @@ docs:
 	apidoc --config docs/apidoc.json -i internal/handlers/ -o docs/api/ --watch
 
 run: fmt vet
-	go run -race main.go ${ARGS}
+	go run -race ${MAIN_EXEC}
 
 # Run go fmt against code
 fmt:
