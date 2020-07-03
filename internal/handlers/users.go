@@ -11,84 +11,59 @@ import (
 	v1 "github.com/DirtyCajunRice/PeUD/api/v1"
 )
 
-func ListUsers(env *Env, w http.ResponseWriter, r *http.Request) {
-	// swagger:operation GET  /users listUsers
-	// Returns a list of existing users
-	// ---
-	// tags:
-	//   - Users
-	// produces:
-	//   - application/json
-	// responses:
-	//   '200':
-	//     description: Success
-	//     schema:
-	//       type: array
-	//       items:
-	//         properties:
-	//           id:
-	//             type: integer
-	//             description: Plex ID
-	//           title:
-	//             type: string
-	//             description: Plex User Title
-	//           username:
-	//             type: string
-	//             description: Plex Username
-	//           email:
-	//             type: string
-	//             description: Plex email
-	//           thumb:
-	//             type: string
-	//             description: Plex Thumbnail URL
-	//           home:
-	//             type: bool
-	//             description: Plex Home User
-	//           allowTuners:
-	//             type: boolean
-	//             description: Allow Tuners
-	//           allowSync:
-	//             type: boolean
-	//             description: Allow Sync
-	//           allowCameraUpload:
-	//             type: boolean
-	//             description: Allow Camera Upload
-	//           allowChannels:
-	//             type: boolean
-	//             description: Allow Using Channels
-	//           allowSubtitleAdmin:
-	//             type: boolean
-	//             description: Allow Subtitle Admin
-	//       example:
-	//         - id: 123123123
-	//           title: user1
-	//           username: user1
-	//           email: user1@gmail.com
-	//           thumb: https://plex.tv/users/asdfasdf/avatar?c=asdfasdf
-	//           home: false
-	//           allowTuners: false
-	//           allowSync: false
-	//           allowCameraUpload: false
-	//           allowChannels: false
-	//           allowSubtitleAdmin: false
-	//         - id: 234234234
-	//           title: user2
-	//           username: user2
-	//           email: user1@gmail.com
-	//           thumb: https://plex.tv/users/asdfasdf/avatar?c=asdfasdf
-	//           home: false
-	//           allowTuners: false
-	//           allowSync: false
-	//           allowCameraUpload: false
-	//           allowChannels: false
-	//           allowSubtitleAdmin: false
-	//   '500':
-	//      description: InternalServerError
-	// x-codeSamples:
-	//   - lang: python3
-	//     source: requests.get("http://127.0.0.1:8888/api/v1/users")
+func ListUser(env *Env, w http.ResponseWriter, r *http.Request) {
+	/**
+	* @api {get} /user Get Users
+	* @apiName GetUser
+	* @apiGroup Users
+	* @apiDescription Get a list of users
+	* @apiVersion 1.0.0
+	* @apiExample {python3} python3
+	*     import requests
+	*     r = requests.get("http://127.0.0.1:8888/api/v1/user")
+	*     r.json()
+	* @apiExample {curl} curl
+	*     curl -i http://127.0.0.1:8888/api/v1/user
+	* @apiSuccess (200) {Object[]} users List of users
+	* @apiSuccess (200) {Integer}  users.id Plex User ID
+	* @apiSuccess (200) {String}   users.title Plex User Title
+	* @apiSuccess (200) {String}   users.username Plex Username
+	* @apiSuccess (200) {String}   users.email Plex email address
+	* @apiSuccess (200) {String}   users.thumb Plex Thumbnail URL
+	* @apiSuccess (200) {Boolean}  users.home Plex home member
+	* @apiSuccess (200) {Boolean}  users.allowTuners Plex allow tuners (permission)
+	* @apiSuccess (200) {Boolean}  users.allowSync Plex allow sync (permission)
+	* @apiSuccess (200) {Boolean}  users.allowCameraUpload Plex allow camera upload (permission)
+	* @apiSuccess (200) {Boolean}  users.allowChannels Plex allow using channels (permission)
+	* @apiSuccess (200) {Boolean}  users.allowSubtitleAdmin Plex allow subtitle administration (permission)
+	* @apiSuccessExample Success
+	*     HTTP/1.1 200 OK
+	*     [
+	*       {
+	*         "id": 12345678,
+	*         "title": "plexuser1",
+	*         "username": "plexuser1",
+	*         "email": "plexuser1@gmail.com",
+	*         "thumb": "https://plex.tv/users/a9s0df87a09sdf78/avatar?c=123412341234",
+	*         "home": false,
+	*         "allowTuners": false,
+	*         "allowSync": false,
+	*         "allowCameraUpload": false,
+	*         "allowChannels": false,
+	*         "allowSubtitleAdmin": false
+	*       }
+	*     ]
+	* @apiError (500) {Object} response Response object
+	* @apiError (500) {String} response.error Internal server error
+	* @apiErrorExample {json} Internal Server Error
+	* HTTP/1.1 500 Internal Server Error
+	*     {
+	*       "error": "InternalServerError"
+	*     }
+	* @apiSampleRequest /version
+	 */
 	logFields := logrus.Fields{
-		"function": "ListUsers",
+		"function": "ListUser",
 	}
 	plexUserList := env.Config.Database.List()
 	responseJSON, err := json.Marshal(plexUserList)
@@ -106,16 +81,6 @@ func ListUsers(env *Env, w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateUsers(env *Env, w http.ResponseWriter, r *http.Request) {
-	// swagger:operation POST  /users createUsers
-	// Create new users
-	// ---
-	// tags:
-	//   - Users
-	// produces:
-	//   - application/json
-	// responses:
-	//   '201':
-	//     description: Created
 	logFields := logrus.Fields{
 		"function": "CreateUsers",
 	}

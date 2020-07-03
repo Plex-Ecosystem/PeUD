@@ -3,3 +3,4 @@
 bin
 web/static/redoc.html
 api/v1/swagger.json
+docs/api

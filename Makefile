@@ -6,7 +6,7 @@ TARGET := peud
 MAIN_EXEC := ./cmd/peud/main.go
 SHARED_BUILD_ENV := GOARCH=amd64 GO111MODULE=on
 SHARED_BUILD_CMD := go build --ldflags "-X main.date=${DATE} -X main.version=${VERSION}" -tags netgo -installsuffix netgo
-.PHONY: all build test clean
+.PHONY: all build test clean docs
 
 all: build
 
@@ -26,13 +26,8 @@ build_win:
 build_mac:
 	$(SHARED_BUILD_ENV) GOOS=darwin $(SHARED_BUILD_CMD) -o bin/${TARGET}-darwin ${MAIN_EXEC}
 
-generate: swagger redoc
-
-swagger:
-	swagger generate spec --scan-models --compact -o api/v1/swagger.json
-
-redoc:
-	npx redoc-cli bundle api/v1/swagger.json --title "PeUD API v1" -o web/static/redoc.html
+docs:
+	apidoc --config docs/apidoc.json -i internal/handlers/ -o docs/api/ --watch
 
 run: fmt vet
 	go run -race main.go ${ARGS}
@@ -46,4 +41,4 @@ vet:
 	go vet ./...
 
 clean:
-	rm -rf ./bin api/v1/swagger.json web/static/redoc.html
+	rm -rf ./bin docs/api
