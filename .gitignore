@@ -1,2 +1,4 @@
 .idea/
 /peud.db
+web/static/redoc.html
+api/v1/swagger.json
