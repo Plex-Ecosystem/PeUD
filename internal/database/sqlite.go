@@ -83,20 +83,6 @@ func (d *Database) List() []*v1.PlexUser {
 	return plexUsers
 }
 
-type plexUser struct {
-	id                 int    `json:"id" peud:"u,p"`
-	title              string `json:"title"`
-	username           string `json:"username" peud:"u"`
-	email              string `json:"email" peud:"u"`
-	thumb              string `json:"thumb"`
-	home               bool   `json:"home"`
-	allowTuners        bool   `json:"allowTuners"`
-	allowSync          bool   `json:"allowSync"`
-	allowCameraUpload  bool   `json:"allowCameraUpload"`
-	allowChannels      bool   `json:"allowChannels"`
-	allowSubtitleAdmin bool   `json:"allowSubtitleAdmin"`
-}
-
 func (d *Database) Add(userList []v1.PlexUser) error {
 	log := d.Log.WithField("function", "add")
 	for _, user := range userList {
