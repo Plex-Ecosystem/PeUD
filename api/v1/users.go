@@ -1,10 +1,10 @@
 package v1
 
 type PlexUser struct {
-	ID                 int    `json:"id"`
+	ID                 int    `json:"id" peud:"u,p"`
 	Title              string `json:"title"`
-	Username           string `json:"username"`
-	Email              string `json:"email"`
+	Username           string `json:"username" peud:"u"`
+	Email              string `json:"email" peud:"u"`
 	Thumb              string `json:"thumb"`
 	Home               bool   `json:"home"`
 	AllowTuners        bool   `json:"allowTuners"`

@@ -17,6 +17,7 @@ func CLI(version, date *string, Env *handlers.Env) {
 		Usage:    "Plex Ecosystem User Database",
 		Action: func(c *cli.Context) error {
 			// TODO: Add validation for multi-option flags like database type
+
 			Start(version, date, Env)
 			return nil
 		},
@@ -48,15 +49,15 @@ func CLI(version, date *string, Env *handlers.Env) {
 			&cli.StringFlag{
 				Name:        "database-type",
 				Aliases:     []string{"T"},
-				Usage:       "Database Backend",
+				Usage:       "Database Backend [sqlite3, mysql, postgres]",
 				EnvVars:     []string{"DATABASE_TYPE"},
-				Value:       "sqlite",
+				Value:       "sqlite3",
 				Destination: &Env.Config.Database.Type,
 			},
 			&cli.StringFlag{
 				Name:        "database-name",
 				Aliases:     []string{"t"},
-				Usage:       "Database Name (For sqlite it is the filename)",
+				Usage:       "Database Name",
 				EnvVars:     []string{"DATABASE_NAME"},
 				Value:       "peud.db",
 				Destination: &Env.Config.Database.Name,

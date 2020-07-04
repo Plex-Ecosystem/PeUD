@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -86,7 +85,6 @@ func CreateUsers(env *Env, w http.ResponseWriter, r *http.Request) {
 	}
 	resp, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Print("asdf")
 		env.Log.WithFields(logFields).Error(err)
 	}
 	isArray, isObject := arrayOrObject(resp)
@@ -102,7 +100,7 @@ func CreateUsers(env *Env, w http.ResponseWriter, r *http.Request) {
 			env.Log.WithFields(logFields).Error(err)
 		}
 	}
-	if err := env.Config.Database.Insert(userList); err != nil {
+	if err := env.Config.Database.Add(userList); err != nil {
 		env.Log.WithFields(logFields).Error("Could not add users", err)
 		http.Error(w, "Could not add users", http.StatusInternalServerError)
 		return

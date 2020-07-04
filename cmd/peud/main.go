@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/jmoiron/modl"
+
 	"github.com/DirtyCajunRice/PeUD/internal/config"
 	"github.com/DirtyCajunRice/PeUD/internal/database"
 	"github.com/DirtyCajunRice/PeUD/internal/handlers"
@@ -20,7 +22,8 @@ func main() {
 		Config: &config.Config{
 			APIServer: &config.APIServer{},
 			Database: &database.Database{
-				Log: log,
+				Log:   log.WithField("package", "database"),
+				DbMap: &modl.DbMap{},
 			},
 		},
 	}

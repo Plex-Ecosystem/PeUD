@@ -2,7 +2,12 @@ package database
 
 import (
 	"database/sql"
+	"reflect"
+	"strings"
 
+	"github.com/iancoleman/strcase"
+	"github.com/jmoiron/modl"
+	"github.com/jmoiron/sqlx/reflectx"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/sirupsen/logrus"
 
@@ -11,108 +16,94 @@ import (
 
 type Database struct {
 	Name string
-	Log  *logrus.Logger
 	Type string
-	DB   *sql.DB
+	Log  *logrus.Entry
+	*modl.DbMap
+}
+
+func fixColMap(t *modl.TableMap, s interface{}) {
+	t.SetKeys(false, "id")
+	v := reflect.TypeOf(s)
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		tag := field.Tag.Get("peud")
+		cm := t.ColMap(strings.ToLower(field.Name))
+		cm.ColumnName = strcase.ToLowerCamel(field.Name)
+		if strings.Contains(tag, "u") {
+			cm.Unique = true
+		}
+	}
+}
+
+func (d *Database) setDialect() {
+	switch d.Type {
+	case "mysql":
+		// TODO: Implement MySQL
+		// d.Dialect = &modl.MySQLDialect{Engine: "InnoDB", Encoding: "UTF8"}
+	case "postgres":
+		// TODO: Implement Postgres
+		// d.Dialect = &modl.PostgresDialect{}
+	case "sqlite3":
+		d.Dialect = &modl.SqliteDialect{}
+	}
+}
+
+func (d *Database) buildTables(tables ...interface{}) {
+	log := d.Log.WithField("function", "buildTables")
+	for _, i := range tables {
+		fixColMap(d.AddTable(i), i)
+		if err := d.CreateTablesIfNotExists(); err != nil {
+			log.Error(err)
+		}
+	}
 }
 
 func (d *Database) Init() {
-	logFields := logrus.Fields{
-		"struct":   "Database",
-		"function": "Init",
+	log := d.Log.WithField("function", "init")
+	d.setDialect()
+	var err error
+	d.Db, err = sql.Open(d.Type, d.Name)
+	modl.TableNameMapper = strcase.ToLowerCamel
+	d.DbMap = modl.NewDbMap(d.Db, d.Dialect)
+	if err != nil {
+		log.Fatal(err)
 	}
-	if d.Type == "sqlite" {
-		db, err := sql.Open("sqlite3", d.Name)
-		if err != nil {
-			d.Log.WithFields(logFields).Error(err)
-		}
+	// reuse json tags to map to structs
+	d.Dbx.Mapper = reflectx.NewMapperFunc("json", strcase.ToLowerCamel)
 
-		createPlexUserTable := `CREATE TABLE IF NOT EXISTS plex_users (
-                                  id INTEGER PRIMARY KEY,
-                                  title TEXT NOT NULL,
-                                  username TEXT NOT NULL UNIQUE,
-                                  email TEXT NOT NULL UNIQUE,
-                                  thumb TEXT NOT NULL,
-                                  home BOOL NOT NULL,
-                                  allowTuners BOOL NOT NULL,
-                                  allowSync BOOL NOT NULL,
-                                  allowCameraUpload BOOL NOT NULL,
-                                  allowChannels BOOL NOT NULL,
-                                  allowSubtitleAdmin BOOL NOT NULL
-                                );`
-		stmt, err := db.Prepare(createPlexUserTable)
-		if err != nil {
-			d.Log.WithFields(logFields).Error(err)
-		}
-
-		_, err = stmt.Exec()
-		if err != nil {
-			d.Log.WithFields(logFields).Error(err)
-		}
-
-		d.DB = db
-	}
-
+	d.buildTables(v1.PlexUser{})
 }
 
-func (d *Database) List() []v1.PlexUser {
-	logFields := logrus.Fields{
-		"struct":   "Database",
-		"function": "List",
+func (d *Database) List() []*v1.PlexUser {
+	log := d.Log.WithField("function", "list")
+	var plexUsers []*v1.PlexUser
+	if err := d.Select(&plexUsers, "SELECT * FROM plexUser"); err != nil {
+		log.Error(err)
 	}
-	db := d.DB
-	rows, err := db.Query("SELECT * FROM plex_users")
-	if err != nil {
-		d.Log.WithFields(logFields).Error(err)
-	}
-	plexUserList := make([]v1.PlexUser, 0)
-	for rows.Next() {
-		user := v1.PlexUser{
-			Title:              "",
-			Username:           "",
-			Email:              "",
-			Thumb:              "",
-			Home:               false,
-			AllowTuners:        false,
-			AllowSync:          false,
-			AllowCameraUpload:  false,
-			AllowChannels:      false,
-			AllowSubtitleAdmin: false,
-		}
-		err = rows.Scan(
-			&user.ID, &user.Title, &user.Username, &user.Email, &user.Thumb, &user.Home, &user.AllowTuners,
-			&user.AllowSync, &user.AllowCameraUpload, &user.AllowChannels, &user.AllowSubtitleAdmin,
-		)
-		plexUserList = append(plexUserList, user)
-	}
-	if err := rows.Close(); err != nil {
-		d.Log.WithFields(logFields).Error(err)
-	}
-	return plexUserList
+	return plexUsers
 }
 
-func (d *Database) Insert(userList []v1.PlexUser) error {
-	logFields := logrus.Fields{
-		"struct":   "Database",
-		"function": "Insert",
-	}
-	db := d.DB
-	insertStatement := `INSERT INTO plex_users(
-	                      id, title, username, email, thumb, home, allowTuners, allowSync,
-                          allowCameraUpload, allowChannels, allowSubtitleAdmin
-                        )  values(?,?,?,?,?,?,?,?,?,?,?)`
-	stmt, err := db.Prepare(insertStatement)
-	if err != nil {
-		d.Log.WithFields(logFields).Error(err)
-	}
+type plexUser struct {
+	id                 int    `json:"id" peud:"u,p"`
+	title              string `json:"title"`
+	username           string `json:"username" peud:"u"`
+	email              string `json:"email" peud:"u"`
+	thumb              string `json:"thumb"`
+	home               bool   `json:"home"`
+	allowTuners        bool   `json:"allowTuners"`
+	allowSync          bool   `json:"allowSync"`
+	allowCameraUpload  bool   `json:"allowCameraUpload"`
+	allowChannels      bool   `json:"allowChannels"`
+	allowSubtitleAdmin bool   `json:"allowSubtitleAdmin"`
+}
+
+func (d *Database) Add(userList []v1.PlexUser) error {
+	log := d.Log.WithField("function", "add")
 	for _, user := range userList {
-		_, err := stmt.Exec(
-			&user.ID, &user.Title, &user.Username, &user.Email, &user.Thumb, &user.Home,
-			&user.AllowTuners, &user.AllowSync, &user.AllowCameraUpload, &user.AllowChannels, &user.AllowSubtitleAdmin,
-		)
-		if err != nil {
-			d.Log.WithFields(logFields).Error(err)
+		if err := d.Insert(&user); err != nil {
+			log.Error(err)
 		}
+		log.Debugf("Successfully created new user: %s", user.Username)
 	}
 	return nil
 }
