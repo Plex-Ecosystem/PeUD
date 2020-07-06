@@ -22,8 +22,12 @@ type Database struct {
 }
 
 func fixColMap(t *modl.TableMap, s interface{}) {
-	t.SetKeys(false, "id")
 	v := reflect.TypeOf(s)
+	if v.Name() == "PlexUser" {
+		t.SetKeys(false, "id")
+	} else if v.Name() == "TautulliUser" {
+		t.SetKeys(false, "userID")
+	}
 	for i := 0; i < v.NumField(); i++ {
 		field := v.Field(i)
 		tag := field.Tag.Get("peud")
@@ -70,8 +74,9 @@ func (d *Database) Init() {
 	}
 	// reuse json tags to map to structs
 	d.Dbx.Mapper = reflectx.NewMapperFunc("json", strcase.ToLowerCamel)
-
+	// create tables
 	d.buildTables(v1.PlexUser{})
+	d.buildTables(v1.TautulliUser{})
 }
 
 func (d *Database) List() []*v1.PlexUser {
