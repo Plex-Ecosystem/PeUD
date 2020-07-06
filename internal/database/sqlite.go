@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"reflect"
 	"strings"
 
@@ -52,10 +53,10 @@ func (d *Database) setDialect() {
 	}
 }
 
-func (d *Database) buildTables(tables ...interface{}) {
+func (d *Database) buildTables(tables []interface{}) {
 	log := d.Log.WithField("function", "buildTables")
 	for _, i := range tables {
-		fixColMap(d.AddTable(i), i)
+		fixColMap(d.AddTableWithName(i, strcase.ToLowerCamel(fmt.Sprintf("%ss", reflect.TypeOf(i).Name()))), i)
 		if err := d.CreateTablesIfNotExists(); err != nil {
 			log.Error(err)
 		}
@@ -75,8 +76,11 @@ func (d *Database) Init() {
 	// reuse json tags to map to structs
 	d.Dbx.Mapper = reflectx.NewMapperFunc("json", strcase.ToLowerCamel)
 	// create tables
-	d.buildTables(v1.PlexUser{})
-	d.buildTables(v1.TautulliUser{})
+	tables := []interface{}{
+		v1.PlexUser{},
+		v1.TautulliUser{},
+	}
+	d.buildTables(tables)
 }
 
 func (d *Database) List() []*v1.PlexUser {

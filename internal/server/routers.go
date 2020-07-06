@@ -61,10 +61,12 @@ func Start(version, date *string, Env *handlers.Env) {
 	router.Route("/api", func(r chi.Router) {
 		r.Route("/v1", func(r chi.Router) {
 			r.Method(http.MethodGet, "/version", handlers.Handler{Env: Env, Handle: handlers.Version})
-			r.Route("/user", func(r chi.Router) {
+			r.Route("/users", func(r chi.Router) {
 				// r.Method(http.MethodGet, "/{id:[0-9]{1,12}", handlers.Handler{Env: Env, Handle:})
-				r.Method(http.MethodGet, "/", handlers.Handler{Env: Env, Handle: handlers.ListUser})
-				r.Method(http.MethodPost, "/", handlers.Handler{Env: Env, Handle: handlers.CreateUsers})
+				r.Route("/plex", func(r chi.Router) {
+					r.Method(http.MethodGet, "/", handlers.Handler{Env: Env, Handle: handlers.ListUser})
+					r.Method(http.MethodPost, "/", handlers.Handler{Env: Env, Handle: handlers.CreateUsers})
+				})
 			})
 			fileServer(r, "/doc")
 		})
