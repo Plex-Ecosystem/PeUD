@@ -26,11 +26,11 @@ type TautulliUser struct {
 	Username         string `json:"username" peud:"u"`
 	Email            string `json:"email" peud:"u"`
 	Thumb            string `json:"thumb"`
-	filterAll        string `json:"filter_all"`
-	filterMovies     string `json:"filter_movies"`
-	filterMusic      string `json:"filter_music"`
-	filterPhotos     string `json:"filter_photos"`
-	filterTelevision string `json:"filter_television"`
+	FilterAll        string `json:"filter_all"`
+	FilterMovies     string `json:"filter_movies"`
+	FilterMusic      string `json:"filter_music"`
+	FilterPhotos     string `json:"filter_photos"`
+	FilterTelevision string `json:"filter_television"`
 	UserID           int    `json:"user_id" peud:"u,p"`
 	FriendlyName     string `json:"friendly_name"`
 	IsActive         bool   `json:"is_active"`
