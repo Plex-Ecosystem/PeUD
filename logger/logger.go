@@ -13,7 +13,3 @@ func New() *logrus.Logger {
 	logger.Level = logrus.DebugLevel
 	return logger
 }
-
-// func NewMiddlewareLogger(logger logr.Logger) func(next http.Handler) http.Handler {
-//	return middleware.RequestLogger(&MiddlewareLogger{logger})
-// }
