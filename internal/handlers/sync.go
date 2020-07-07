@@ -25,16 +25,6 @@ type OrganizrResponse struct {
 	} `json:"data"`
 }
 
-// from https://stackoverflow.com/a/10485970/12204515
-func contains(s []string, v string) bool {
-	for _, x := range s {
-		if x == v {
-			return true
-		}
-	}
-	return false
-}
-
 func Sync(env *Env, w http.ResponseWriter, r *http.Request) {
 	filter := strings.Split(r.URL.Query().Get("only"), ",")
 	if len(filter) == 0 {
