@@ -62,6 +62,7 @@ func sync(e string, env *Env) {
 	c := &http.Client{}
 	var (
 		auth = env.Config.Authentication
+		db   = env.Config.Database
 		h    map[string][]string
 	)
 	switch e {
@@ -76,7 +77,7 @@ func sync(e string, env *Env) {
 		if err := json.Unmarshal(b, &plexFriends); err != nil {
 			l.Error(err)
 		}
-		env.Config.Database.InsertUsers("plexUsers", plexFriends)
+		db.InsertUsers("plexUsers", plexFriends)
 	case "tautulli":
 		u := fmt.Sprintf("%s/api/v2?cmd=get_users&apikey=%s", auth.TautulliURL, auth.TautulliKey)
 		b := sharedRequest(c, u, h, l, e)
@@ -84,7 +85,7 @@ func sync(e string, env *Env) {
 		if err := json.Unmarshal(b, &tautulliResponse); err != nil {
 			l.Error(err)
 		}
-		env.Config.Database.InsertUsers("tautulliUsers", tautulliResponse.Response.Data)
+		db.InsertUsers("tautulliUsers", tautulliResponse.Response.Data)
 	case "organizr":
 		u := fmt.Sprintf("%s/api?v1/user/list", auth.OrganizrURL)
 		h = map[string][]string{"token": {auth.OrganizrToken}}
@@ -93,7 +94,7 @@ func sync(e string, env *Env) {
 		if err := json.Unmarshal(b, &organizrResponse); err != nil {
 			l.Error(err)
 		}
-		env.Config.Database.InsertUsers("organizrUsers", organizrResponse.Data.Users)
+		db.InsertUsers("organizrUsers", organizrResponse.Data.Users)
 	case "ombi":
 	}
 }

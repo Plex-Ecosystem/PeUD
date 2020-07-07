@@ -18,6 +18,9 @@ func CLI(env *handlers.Env) {
 		Action: func(c *cli.Context) error {
 			// TODO: InsertPlexUsers validation for multi-option flags like database type
 			env.Config.LoadFromEnv()
+			if env.Config.JSONLogging {
+				//env.
+			}
 			Start(env)
 			return nil
 		},
@@ -37,6 +40,14 @@ func CLI(env *handlers.Env) {
 				EnvVars:     []string{"DEBUG"},
 				Value:       false,
 				Destination: &env.Config.Debug,
+			},
+			&cli.BoolFlag{
+				Name:        "json-logs",
+				Aliases:     []string{"j"},
+				Usage:       "Use JSON formatted logging",
+				EnvVars:     []string{"JSON_LOGS"},
+				Value:       false,
+				Destination: &env.Config.JSONLogging,
 			},
 			&cli.StringFlag{
 				Name:        "address",

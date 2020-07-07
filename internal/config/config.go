@@ -9,6 +9,7 @@ import (
 type Config struct {
 	APIServer      *APIServer
 	Debug          bool
+	JSONLogging    bool
 	Database       *database.Database
 	Authentication *Authentication
 }
