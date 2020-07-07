@@ -61,22 +61,7 @@ func ListUser(env *Env, w http.ResponseWriter, r *http.Request) {
 	*     }
 	* @apiSampleRequest /version
 	 */
-	logFields := logrus.Fields{
-		"function": "ListUser",
-	}
-	plexUserList := env.Config.Database.List()
-	responseJSON, err := json.Marshal(plexUserList)
-	if err != nil {
-		env.Log.WithFields(logFields).Error("Could not marshal json body", err)
-		http.Error(w, "Could not marshal your request", http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if _, err := w.Write(responseJSON); err != nil {
-		env.Log.WithFields(logFields).Error("Could not reply to your request", err)
-		http.Error(w, "could not reply to your request", http.StatusInternalServerError)
-	}
+	env.toJSON(w, r, env.Config.Database.List())
 }
 
 func CreateUsers(env *Env, w http.ResponseWriter, r *http.Request) {

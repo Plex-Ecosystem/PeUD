@@ -85,7 +85,7 @@ func (d *Database) Init() {
 
 func (d *Database) List() []*v1.PlexUser {
 	log := d.Log.WithField("function", "list")
-	var plexUsers []*v1.PlexUser
+	plexUsers := make([]*v1.PlexUser, 0)
 	if err := d.Select(&plexUsers, "SELECT * FROM plexUser"); err != nil {
 		log.Error(err)
 	}

@@ -5,7 +5,7 @@ import (
 )
 
 // GetVersion returns a JSON formatted VersionHandler struct
-func Version(Env *Env, w http.ResponseWriter, r *http.Request) {
+func Version(env *Env, w http.ResponseWriter, r *http.Request) {
 	/**
 	* @api {get} /version Get Version
 	* @apiName Version
@@ -36,6 +36,5 @@ func Version(Env *Env, w http.ResponseWriter, r *http.Request) {
 	*     }
 	* @apiSampleRequest /version
 	 */
-	//log := Env.Log
-	Env.toJSON(w, r, Env.Build)
+	env.toJSON(w, r, env.Build)
 }
