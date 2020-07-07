@@ -19,13 +19,19 @@ type APIServer struct {
 }
 
 type Authentication struct {
-	PlexToken   string
-	TautulliKey string
+	PlexToken     string
+	TautulliKey   string
+	TautulliURL   string
+	OrganizrToken string
+	OrganizrURL   string
 }
 
 func (c *Config) LoadFromEnv() {
 	c.Authentication = &Authentication{
-		PlexToken:   os.Getenv("PLEX_TOKEN"),
-		TautulliKey: os.Getenv("TAUTULLI_API_KEY"),
+		PlexToken:     os.Getenv("PLEX_TOKEN"),
+		TautulliURL:   os.Getenv("TAUTULLI_URL"),
+		TautulliKey:   os.Getenv("TAUTULLI_API_KEY"),
+		OrganizrToken: os.Getenv("ORGANIZR_TOKEN"),
+		OrganizrURL:   os.Getenv("ORGANIZR_URL"),
 	}
 }

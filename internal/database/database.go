@@ -8,7 +8,6 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/jmoiron/modl"
-	"github.com/jmoiron/sqlx/reflectx"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/sirupsen/logrus"
 
@@ -24,16 +23,18 @@ type Database struct {
 
 func fixColMap(t *modl.TableMap, s interface{}) {
 	v := reflect.TypeOf(s)
-	if v.Name() == "PlexUser" {
+	switch v.Name() {
+	case "PlexUser":
 		t.SetKeys(false, "id")
-	} else if v.Name() == "TautulliUser" {
-		t.SetKeys(false, "userID")
+	case "TautulliUser":
+		t.SetKeys(false, "rowid")
+	case "OrganizrUser":
+		t.SetKeys(false, "id")
 	}
 	for i := 0; i < v.NumField(); i++ {
 		field := v.Field(i)
 		tag := field.Tag.Get("peud")
 		cm := t.ColMap(strings.ToLower(field.Name))
-		cm.ColumnName = strcase.ToLowerCamel(field.Name)
 		if strings.Contains(tag, "u") {
 			cm.Unique = true
 		}
@@ -68,17 +69,15 @@ func (d *Database) Init() {
 	d.setDialect()
 	var err error
 	d.Db, err = sql.Open(d.Type, d.Name)
-	modl.TableNameMapper = strcase.ToLowerCamel
 	d.DbMap = modl.NewDbMap(d.Db, d.Dialect)
 	if err != nil {
 		log.Fatal(err)
 	}
-	// reuse json tags to map to structs
-	d.Dbx.Mapper = reflectx.NewMapperFunc("json", strcase.ToLowerCamel)
 	// create tables
 	tables := []interface{}{
 		v1.PlexUser{},
 		v1.TautulliUser{},
+		v1.OrganizrUser{},
 	}
 	d.buildTables(tables)
 }
@@ -87,6 +86,24 @@ func (d *Database) ListPlexUsers() []*v1.PlexUser {
 	log := d.Log.WithField("function", "list")
 	users := make([]*v1.PlexUser, 0)
 	if err := d.Select(&users, "SELECT * FROM plexUsers"); err != nil {
+		log.Error(err)
+	}
+	return users
+}
+
+func (d *Database) ListTautulliUsers() []*v1.TautulliUser {
+	log := d.Log.WithField("function", "list")
+	users := make([]*v1.TautulliUser, 0)
+	if err := d.Select(&users, "SELECT * FROM tautulliUsers"); err != nil {
+		log.Error(err)
+	}
+	return users
+}
+
+func (d *Database) ListOrganizrUsers() []*v1.OrganizrUser {
+	log := d.Log.WithField("function", "list")
+	users := make([]*v1.OrganizrUser, 0)
+	if err := d.Select(&users, "SELECT * FROM organizrUsers"); err != nil {
 		log.Error(err)
 	}
 	return users
@@ -105,10 +122,37 @@ func (d *Database) InsertPlexUsers(userList []v1.PlexUser) error {
 	log := d.Log.WithField("function", "add")
 	d.dropRows("plexUsers")
 	for _, user := range userList {
+		if user.Username == "Local" {
+			continue
+		}
 		if err := d.Insert(&user); err != nil {
 			log.Error(err)
 		}
 	}
 	log.Debugf("added users to plexUsers")
+	return nil
+}
+
+func (d *Database) InsertTautulliUsers(userList []v1.TautulliUser) error {
+	log := d.Log.WithField("function", "add")
+	d.dropRows("tautulliUsers")
+	for _, user := range userList {
+		if err := d.Insert(&user); err != nil {
+			log.Error(err)
+		}
+	}
+	log.Debugf("added users to tautulliUsers")
+	return nil
+}
+
+func (d *Database) InsertOrganizrUsers(userList []v1.OrganizrUser) error {
+	log := d.Log.WithField("function", "add")
+	d.dropRows("organizrUsers")
+	for _, user := range userList {
+		if err := d.Insert(&user); err != nil {
+			log.Error(err)
+		}
+	}
+	log.Debugf("added users to organizrUsers")
 	return nil
 }

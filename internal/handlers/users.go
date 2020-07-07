@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 
@@ -61,7 +62,16 @@ func ListUsers(env *Env, w http.ResponseWriter, r *http.Request) {
 	*     }
 	* @apiSampleRequest /version
 	 */
-	env.toJSON(w, r, env.Config.Database.ListPlexUsers())
+	splitPath := strings.Split(r.URL.Path, "/")
+
+	switch endpoint := splitPath[len(splitPath)-1]; endpoint {
+	case "tautulli":
+		env.toJSON(w, r, env.Config.Database.ListTautulliUsers())
+	case "plex":
+		env.toJSON(w, r, env.Config.Database.ListPlexUsers())
+	case "organizr":
+		env.toJSON(w, r, env.Config.Database.ListOrganizrUsers())
+	}
 }
 
 func CreateUsers(env *Env, w http.ResponseWriter, r *http.Request) {

@@ -62,11 +62,11 @@ func Start(Env *handlers.Env) {
 		r.Route("/v1", func(r chi.Router) {
 			r.Method(http.MethodGet, "/version", handlers.Handler{Env: Env, Handle: handlers.Version})
 			fileServer(r, "/doc")
+
 			r.Route("/users", func(r chi.Router) {
 				// r.Method(http.MethodGet, "/{id:[0-9]{1,12}", handlers.Handler{Env: Env, Handle:})
-				r.Route("/plex", func(r chi.Router) {
+				r.Route("/{plex,tautulli,organizr}", func(r chi.Router) {
 					r.Method(http.MethodGet, "/", handlers.Handler{Env: Env, Handle: handlers.ListUsers})
-					r.Method(http.MethodPost, "/", handlers.Handler{Env: Env, Handle: handlers.CreateUsers})
 				})
 			})
 			r.Route("/sync", func(r chi.Router) {

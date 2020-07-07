@@ -39,9 +39,6 @@ func (e *Env) toJSON(w http.ResponseWriter, r *http.Request, i interface{}, stat
 	buffer := &bytes.Buffer{}
 	encoder := json.NewEncoder(buffer)
 	encoder.SetEscapeHTML(true)
-	//if i == nil {
-	//
-	//}
 	if err := encoder.Encode(i); err != nil {
 		log.Error(err)
 		http.Error(w, "Could not marshal response to JSON", http.StatusInternalServerError)
