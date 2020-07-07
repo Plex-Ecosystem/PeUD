@@ -1,24 +1,19 @@
 package v1
 
 type PlexUser struct {
-	Username                  string `json:"username" peud:"u"`
-	Email                     string `json:"email" peud:"u"`
-	Thumb                     string `json:"thumb"`
-	FilterAll                 string `json:"filterAll"`
-	FilterMovies              string `json:"filterMovies"`
-	FilterMusic               string `json:"filterMusic"`
-	FilterPhotos              string `json:"filterPhotos"`
-	FilterTelevision          string `json:"filterTelevision"`
-	ID                        int    `json:"id" peud:"u,p"`
-	Title                     string `json:"title"`
-	RecommendationsPlaylistId string `json:"recommendationsPlaylistId"`
-	Home                      bool   `json:"home"`
-	AllowTuners               bool   `json:"allowTuners"`
-	AllowSync                 bool   `json:"allowSync"`
-	AllowCameraUpload         bool   `json:"allowCameraUpload"`
-	AllowChannels             bool   `json:"allowChannels"`
-	AllowSubtitleAdmin        bool   `json:"allowSubtitleAdmin"`
-	Restricted                bool   `json:"restricted"`
+	ID          int    `json:"id" peud:"u,p"`
+	UUID        string `json:"uuid" peud:"u"`
+	HasPassword bool   `json:"hasPassword"`
+	Username    string `json:"username" peud:"u"`
+	Email       string `json:"email" peud:"u"`
+	Thumb       string `json:"thumb"`
+	Title       string `json:"title"`
+	Home        bool   `json:"home"`
+	Restricted  bool   `json:"restricted"`
+	Status      string `json:"status"`
+	Admin       bool   `json:"admin"`
+	Guest       bool   `json:"guest"`
+	Protected   bool   `json:"protected"`
 }
 
 type TautulliUser struct {

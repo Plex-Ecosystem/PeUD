@@ -23,7 +23,7 @@ func ListUsers(env *Env, w http.ResponseWriter, r *http.Request) {
 	*     r.json()
 	* @apiExample {curl} curl
 	*     curl -i http://127.0.0.1:8888/api/v1/user
-	* @apiSuccess (200) {Object[]} users List of users
+	* @apiSuccess (200) {Object[]} users ListPlexUsers of users
 	* @apiSuccess (200) {Integer}  users.id Plex User ID
 	* @apiSuccess (200) {String}   users.title Plex User Title
 	* @apiSuccess (200) {String}   users.username Plex Username
@@ -61,7 +61,7 @@ func ListUsers(env *Env, w http.ResponseWriter, r *http.Request) {
 	*     }
 	* @apiSampleRequest /version
 	 */
-	env.toJSON(w, r, env.Config.Database.List())
+	env.toJSON(w, r, env.Config.Database.ListPlexUsers())
 }
 
 func CreateUsers(env *Env, w http.ResponseWriter, r *http.Request) {
