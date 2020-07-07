@@ -83,13 +83,13 @@ func (d *Database) Init() {
 	d.buildTables(tables)
 }
 
-func (d *Database) List() []*v1.PlexUser {
+func (d *Database) ListPlexUsers() []*v1.PlexUser {
 	log := d.Log.WithField("function", "list")
-	plexUsers := make([]*v1.PlexUser, 0)
-	if err := d.Select(&plexUsers, "SELECT * FROM plexUser"); err != nil {
+	users := make([]*v1.PlexUser, 0)
+	if err := d.Select(&users, "SELECT * FROM plexUsers"); err != nil {
 		log.Error(err)
 	}
-	return plexUsers
+	return users
 }
 
 func (d *Database) Add(userList []v1.PlexUser) error {
