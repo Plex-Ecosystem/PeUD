@@ -34,5 +34,5 @@ func main() {
 		},
 	}
 
-	server.CLI(&version, &date, &env)
+	server.CLI(&env)
 }

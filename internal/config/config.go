@@ -1,6 +1,10 @@
 package config
 
-import "github.com/DirtyCajunRice/PeUD/internal/database"
+import (
+	"os"
+
+	"github.com/DirtyCajunRice/PeUD/internal/database"
+)
 
 type Config struct {
 	APIServer      *APIServer
@@ -17,4 +21,11 @@ type APIServer struct {
 type Authentication struct {
 	PlexToken   string
 	TautulliKey string
+}
+
+func (c *Config) LoadFromEnv() {
+	c.Authentication = &Authentication{
+		PlexToken:   os.Getenv("PLEX_TOKEN"),
+		TautulliKey: os.Getenv("TAUTULLI_API_KEY"),
+	}
 }

@@ -2,7 +2,7 @@ package v1
 
 type PlexUser struct {
 	ID          int    `json:"id" peud:"u,p"`
-	UUID        string `json:"uuid" peud:"u"`
+	Uuid        string `json:"uuid" peud:"u"`
 	HasPassword bool   `json:"hasPassword"`
 	Username    string `json:"username" peud:"u"`
 	Email       string `json:"email" peud:"u"`

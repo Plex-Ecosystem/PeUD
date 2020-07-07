@@ -92,13 +92,23 @@ func (d *Database) ListPlexUsers() []*v1.PlexUser {
 	return users
 }
 
-func (d *Database) Add(userList []v1.PlexUser) error {
+func (d *Database) dropRows(table string) {
+	log := d.Log.WithField("function", "dropRows")
+	if _, err := d.Exec(fmt.Sprintf("DELETE FROM %s", table)); err != nil {
+		log.Error(err)
+		return
+	}
+	log.Debug("dropped all rows in ", table)
+}
+
+func (d *Database) InsertPlexUsers(userList []v1.PlexUser) error {
 	log := d.Log.WithField("function", "add")
+	d.dropRows("plexUsers")
 	for _, user := range userList {
 		if err := d.Insert(&user); err != nil {
 			log.Error(err)
 		}
-		log.Debugf("Successfully created new user: %s", user.Username)
 	}
+	log.Debugf("added users to plexUsers")
 	return nil
 }

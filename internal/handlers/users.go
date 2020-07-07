@@ -85,7 +85,7 @@ func CreateUsers(env *Env, w http.ResponseWriter, r *http.Request) {
 			env.Log.WithFields(logFields).Error(err)
 		}
 	}
-	if err := env.Config.Database.Add(userList); err != nil {
+	if err := env.Config.Database.InsertPlexUsers(userList); err != nil {
 		env.Log.WithFields(logFields).Error("Could not add users", err)
 		http.Error(w, "Could not add users", http.StatusInternalServerError)
 		return

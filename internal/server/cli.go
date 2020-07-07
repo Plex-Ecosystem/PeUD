@@ -9,16 +9,16 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func CLI(version, date *string, Env *handlers.Env) {
+func CLI(env *handlers.Env) {
 	app := &cli.App{
 		Name:     "PeUD",
 		HelpName: "peud",
-		Version:  *version,
+		Version:  *env.Build.Version,
 		Usage:    "Plex Ecosystem User Database",
 		Action: func(c *cli.Context) error {
-			// TODO: Add validation for multi-option flags like database type
-
-			Start(version, date, Env)
+			// TODO: InsertPlexUsers validation for multi-option flags like database type
+			env.Config.LoadFromEnv()
+			Start(env)
 			return nil
 		},
 		Flags: []cli.Flag{
@@ -28,7 +28,7 @@ func CLI(version, date *string, Env *handlers.Env) {
 				Usage:       "Server listening port",
 				EnvVars:     []string{"SERVER_PORT"},
 				Value:       8888,
-				Destination: &Env.Config.APIServer.Port,
+				Destination: &env.Config.APIServer.Port,
 			},
 			&cli.BoolFlag{
 				Name:        "debug",
@@ -36,7 +36,7 @@ func CLI(version, date *string, Env *handlers.Env) {
 				Usage:       "Enable debug logging",
 				EnvVars:     []string{"DEBUG"},
 				Value:       false,
-				Destination: &Env.Config.Debug,
+				Destination: &env.Config.Debug,
 			},
 			&cli.StringFlag{
 				Name:        "address",
@@ -44,7 +44,7 @@ func CLI(version, date *string, Env *handlers.Env) {
 				Usage:       "Server hostname or IP",
 				EnvVars:     []string{"SERVER_ADDRESS"},
 				Value:       "0.0.0.0",
-				Destination: &Env.Config.APIServer.Address,
+				Destination: &env.Config.APIServer.Address,
 			},
 			&cli.StringFlag{
 				Name:        "database-type",
@@ -52,7 +52,7 @@ func CLI(version, date *string, Env *handlers.Env) {
 				Usage:       "Database Backend [sqlite3, mysql, postgres]",
 				EnvVars:     []string{"DATABASE_TYPE"},
 				Value:       "sqlite3",
-				Destination: &Env.Config.Database.Type,
+				Destination: &env.Config.Database.Type,
 			},
 			&cli.StringFlag{
 				Name:        "database-name",
@@ -60,13 +60,13 @@ func CLI(version, date *string, Env *handlers.Env) {
 				Usage:       "Database Name",
 				EnvVars:     []string{"DATABASE_NAME"},
 				Value:       "peud.db",
-				Destination: &Env.Config.Database.Name,
+				Destination: &env.Config.Database.Name,
 			},
 		},
 	}
 
 	sort.Sort(cli.FlagsByName(app.Flags))
-	log := Env.Log
+	log := env.Log
 	err := app.Run(os.Args)
 	if err != nil {
 		log.Fatal(err)

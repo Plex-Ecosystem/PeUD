@@ -32,7 +32,7 @@ func fileServer(r chi.Router, path string) {
 	})
 }
 
-func Start(version, date *string, Env *handlers.Env) {
+func Start(Env *handlers.Env) {
 	log := Env.Log
 	config := Env.Config
 	router := chi.NewRouter()
@@ -61,6 +61,7 @@ func Start(version, date *string, Env *handlers.Env) {
 	router.Route("/api", func(r chi.Router) {
 		r.Route("/v1", func(r chi.Router) {
 			r.Method(http.MethodGet, "/version", handlers.Handler{Env: Env, Handle: handlers.Version})
+			fileServer(r, "/doc")
 			r.Route("/users", func(r chi.Router) {
 				// r.Method(http.MethodGet, "/{id:[0-9]{1,12}", handlers.Handler{Env: Env, Handle:})
 				r.Route("/plex", func(r chi.Router) {
@@ -68,7 +69,9 @@ func Start(version, date *string, Env *handlers.Env) {
 					r.Method(http.MethodPost, "/", handlers.Handler{Env: Env, Handle: handlers.CreateUsers})
 				})
 			})
-			fileServer(r, "/doc")
+			r.Route("/sync", func(r chi.Router) {
+				r.Method(http.MethodPatch, "/", handlers.Handler{Env: Env, Handle: handlers.Sync})
+			})
 		})
 	})
 
