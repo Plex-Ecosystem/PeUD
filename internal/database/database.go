@@ -8,6 +8,7 @@ import (
 
 	"github.com/iancoleman/strcase"
 	"github.com/jmoiron/modl"
+	"github.com/jmoiron/sqlx"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/sirupsen/logrus"
 
@@ -83,40 +84,66 @@ func (d *Database) Init() {
 	d.buildTables(tables)
 }
 
-func (d *Database) ListPlexUsers() []*v1.PlexUser {
-	log := d.Log.WithField("function", "list")
-	users := make([]*v1.PlexUser, 0)
-	if err := d.Select(&users, "SELECT * FROM plexUsers"); err != nil {
+func (d *Database) ListUsers(endpoint string) interface{} {
+	log := d.Log.WithField("function", "ListUsers")
+	rows, err := d.Db.Query(fmt.Sprintf("SELECT * FROM %sUsers", endpoint))
+	if err != nil {
 		log.Error(err)
 	}
-	return users
+	switch endpoint {
+	case "plex":
+		users := make([]v1.PlexUser, 0)
+		sqlx.StructScan(rows, &users)
+		return users
+	case "tautulli":
+		users := make([]v1.TautulliUser, 0)
+		sqlx.StructScan(rows, &users)
+		return users
+	case "organizr":
+		users := make([]v1.OrganizrUser, 0)
+		sqlx.StructScan(rows, &users)
+		return users
+	case "ombi":
+		users := make([]v1.OmbiUser, 0)
+		sqlx.StructScan(rows, &users)
+		return users
+	default:
+		var placeholder interface{}
+		return placeholder
+	}
 }
 
-func (d *Database) ListTautulliUsers() []*v1.TautulliUser {
-	log := d.Log.WithField("function", "list")
-	users := make([]*v1.TautulliUser, 0)
-	if err := d.Select(&users, "SELECT * FROM tautulliUsers"); err != nil {
-		log.Error(err)
+func (d *Database) InsertUsers(table string, v interface{}) error {
+	log := d.Log.WithField("function", "InsertUsers")
+	d.dropRows(table)
+	switch x := v.(type) {
+	case []v1.PlexUser:
+		for _, user := range x {
+			if err := d.Insert(&user); err != nil {
+				log.Error(err)
+			}
+		}
+	case []v1.OrganizrUser:
+		for _, user := range x {
+			if err := d.Insert(&user); err != nil {
+				log.Error(err)
+			}
+		}
+	case []v1.OmbiUser:
+		for _, user := range x {
+			if err := d.Insert(&user); err != nil {
+				log.Error(err)
+			}
+		}
+	case []v1.TautulliUser:
+		for _, user := range x {
+			if err := d.Insert(&user); err != nil {
+				log.Error(err)
+			}
+		}
 	}
-	return users
-}
-
-func (d *Database) ListOrganizrUsers() []*v1.OrganizrUser {
-	log := d.Log.WithField("function", "list")
-	users := make([]*v1.OrganizrUser, 0)
-	if err := d.Select(&users, "SELECT * FROM organizrUsers"); err != nil {
-		log.Error(err)
-	}
-	return users
-}
-
-func (d *Database) ListOmbiUsers() []*v1.OmbiUser {
-	log := d.Log.WithField("function", "list")
-	users := make([]*v1.OmbiUser, 0)
-	if err := d.Select(&users, "SELECT * FROM ombiUsers"); err != nil {
-		log.Error(err)
-	}
-	return users
+	log.Debug("added users to ", table)
+	return nil
 }
 
 func (d *Database) dropRows(table string) {
@@ -126,55 +153,4 @@ func (d *Database) dropRows(table string) {
 		return
 	}
 	log.Debug("dropped all rows in ", table)
-}
-
-func (d *Database) InsertPlexUsers(userList []v1.PlexUser) error {
-	log := d.Log.WithField("function", "add")
-	d.dropRows("plexUsers")
-	for _, user := range userList {
-		if user.Username == "Local" {
-			continue
-		}
-		if err := d.Insert(&user); err != nil {
-			log.Error(err)
-		}
-	}
-	log.Debugf("added users to plexUsers")
-	return nil
-}
-
-func (d *Database) InsertTautulliUsers(userList []v1.TautulliUser) error {
-	log := d.Log.WithField("function", "add")
-	d.dropRows("tautulliUsers")
-	for _, user := range userList {
-		if err := d.Insert(&user); err != nil {
-			log.Error(err)
-		}
-	}
-	log.Debugf("added users to tautulliUsers")
-	return nil
-}
-
-func (d *Database) InsertOrganizrUsers(userList []v1.OrganizrUser) error {
-	log := d.Log.WithField("function", "add")
-	d.dropRows("organizrUsers")
-	for _, user := range userList {
-		if err := d.Insert(&user); err != nil {
-			log.Error(err)
-		}
-	}
-	log.Debugf("added users to organizrUsers")
-	return nil
-}
-
-func (d *Database) InsertOmbiUsers(userList []v1.OmbiUser) error {
-	log := d.Log.WithField("function", "add")
-	d.dropRows("ombiUsers")
-	for _, user := range userList {
-		if err := d.Insert(&user); err != nil {
-			log.Error(err)
-		}
-	}
-	log.Debugf("added users to ombiUsers")
-	return nil
 }

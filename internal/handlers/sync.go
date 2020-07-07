@@ -25,137 +25,85 @@ type OrganizrResponse struct {
 	} `json:"data"`
 }
 
+// from https://stackoverflow.com/a/10485970/12204515
+func contains(s []string, v string) bool {
+	for _, x := range s {
+		if x == v {
+			return true
+		}
+	}
+	return false
+}
+
 func Sync(env *Env, w http.ResponseWriter, r *http.Request) {
-	filter := r.URL.Query().Get("only")
-	if strings.Contains(filter, "plex") || filter == "" {
-		syncPlex(env)
+	filter := strings.Split(r.URL.Query().Get("only"), ",")
+	if len(filter) == 0 {
+		filter = []string{"organizr", "tautulli", "plex", "ombi"}
 	}
-	if strings.Contains(filter, "tautulli") || filter == "" {
-		syncTautulli(env)
-	}
-	if strings.Contains(filter, "organizr") || filter == "" {
-		syncOrganizr(env)
-	}
-	if strings.Contains(filter, "ombi") || filter == "" {
-		syncOmbi(env)
+	for _, i := range filter {
+		sync(i, env)
 	}
 }
 
-func syncPlex(env *Env) {
-	log := env.Log
-	client := &http.Client{}
-	req, _ := http.NewRequest("GET", "https://plex.tv/api/v2/friends", nil)
-	req.Header.Add("X-Plex-Client-Identifier", "PeUD")
-	req.Header.Add("X-Plex-Token", env.Config.Authentication.PlexToken)
-	req.Header.Add("Accept", "application/json")
+func sharedRequest(c *http.Client, u string, h map[string][]string, l *logrus.Entry, e string) []byte {
+	r, _ := http.NewRequest("GET", u, nil)
+	r.Header = h
+	r.Header.Add("Accept", "application/json")
 	start := time.Now()
-	resp, err := client.Do(req)
+	resp, err := c.Do(r)
 	if err != nil {
-		log.Error(err)
-		return
+		l.Error(err)
 	}
-	log.WithFields(logrus.Fields{
+	l.WithFields(logrus.Fields{
 		"request": "upstream",
-		"api":     "plex.tv",
+		"api":     e,
 		"took":    time.Since(start).Nanoseconds(),
-	}).Debug("plex api call successful")
+	}).Debug("api call successful")
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	b, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Error(err)
+		l.Error(err)
 	}
-	plexFriends := make([]v1.PlexUser, 0)
-	if err := json.Unmarshal(body, &plexFriends); err != nil {
-		log.Error(err)
-	}
-	env.Config.Database.InsertPlexUsers(plexFriends)
+	return b
 }
 
-func syncTautulli(env *Env) {
-	log := env.Log
-	client := &http.Client{}
-	auth := env.Config.Authentication
-	req, _ := http.NewRequest("GET", fmt.Sprintf("%s/api/v2?cmd=get_users&apikey=%s", auth.TautulliURL, auth.TautulliKey), nil)
-	req.Header.Add("Accept", "application/json")
-	start := time.Now()
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Error(err)
-		return
+func sync(e string, env *Env) {
+	l := env.Log
+	c := &http.Client{}
+	var (
+		auth = env.Config.Authentication
+		h    map[string][]string
+	)
+	switch e {
+	case "plex":
+		u := "https://plex.tv/api/v2/friends"
+		h = map[string][]string{
+			"X-Plex-Client-Identifier": {"PeUD"},
+			"X-Plex-Token":             {auth.PlexToken},
+		}
+		b := sharedRequest(c, u, h, l, e)
+		plexFriends := make([]v1.PlexUser, 0)
+		if err := json.Unmarshal(b, &plexFriends); err != nil {
+			l.Error(err)
+		}
+		env.Config.Database.InsertUsers("plexUsers", plexFriends)
+	case "tautulli":
+		u := fmt.Sprintf("%s/api/v2?cmd=get_users&apikey=%s", auth.TautulliURL, auth.TautulliKey)
+		b := sharedRequest(c, u, h, l, e)
+		tautulliResponse := TautulliResponse{}
+		if err := json.Unmarshal(b, &tautulliResponse); err != nil {
+			l.Error(err)
+		}
+		env.Config.Database.InsertUsers("tautulliUsers", tautulliResponse.Response.Data)
+	case "organizr":
+		u := fmt.Sprintf("%s/api?v1/user/list", auth.OrganizrURL)
+		h = map[string][]string{"token": {auth.OrganizrToken}}
+		b := sharedRequest(c, u, h, l, e)
+		organizrResponse := OrganizrResponse{}
+		if err := json.Unmarshal(b, &organizrResponse); err != nil {
+			l.Error(err)
+		}
+		env.Config.Database.InsertUsers("organizrUsers", organizrResponse.Data.Users)
+	case "ombi":
 	}
-	log.WithFields(logrus.Fields{
-		"request": "upstream",
-		"api":     "tautulli",
-		"took":    time.Since(start).Nanoseconds(),
-	}).Debug("tautulli api call successful")
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Error(err)
-	}
-	tautulliResponse := TautulliResponse{}
-	if err := json.Unmarshal(body, &tautulliResponse); err != nil {
-		log.Error(err)
-	}
-	env.Config.Database.InsertTautulliUsers(tautulliResponse.Response.Data)
-}
-
-func syncOrganizr(env *Env) {
-	log := env.Log
-	client := &http.Client{}
-	auth := env.Config.Authentication
-	req, _ := http.NewRequest("GET", fmt.Sprintf("%s/api?v1/user/list", auth.OrganizrURL), nil)
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("token", auth.OrganizrToken)
-	start := time.Now()
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	log.WithFields(logrus.Fields{
-		"request": "upstream",
-		"api":     "organizr",
-		"took":    time.Since(start).Nanoseconds(),
-	}).Debug("organizr api call successful")
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Error(err)
-	}
-	organizrResponse := OrganizrResponse{}
-	if err := json.Unmarshal(body, &organizrResponse); err != nil {
-		log.Error(err)
-	}
-	env.Config.Database.InsertOrganizrUsers(organizrResponse.Data.Users)
-}
-
-func syncOmbi(env *Env) {
-	//log := env.Log
-	//client := &http.Client{}
-	//auth := env.Config.Authentication
-	//req, _ := http.NewRequest("GET", fmt.Sprintf("%s/api?v1/user/list", auth.OrganizrURL), nil)
-	//req.Header.Add("Accept", "application/json")
-	//req.Header.Add("token", auth.OrganizrToken)
-	//start := time.Now()
-	//resp, err := client.Do(req)
-	//if err != nil {
-	//	log.Error(err)
-	//	return
-	//}
-	//log.WithFields(logrus.Fields{
-	//	"request": "upstream",
-	//	"api":     "organizr",
-	//	"took":    time.Since(start).Nanoseconds(),
-	//}).Debug("organizr api call successful")
-	//defer resp.Body.Close()
-	//body, err := ioutil.ReadAll(resp.Body)
-	//if err != nil {
-	//	log.Error(err)
-	//}
-	//organizrResponse := OrganizrResponse{}
-	//if err := json.Unmarshal(body, &organizrResponse); err != nil {
-	//	log.Error(err)
-	//}
-	//env.Config.Database.InsertOrganizrUsers(organizrResponse.Data.Users)
 }
