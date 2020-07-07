@@ -40,8 +40,8 @@ func (c middlewareLogger) NewLogEntry(r *http.Request) middleware.LogEntry {
 		"took":       latency.Nanoseconds(),
 		"remote":     r.RemoteAddr,
 		"scheme":     scheme,
-		"uri":        fmt.Sprintf("%s://%s%s", scheme, r.Host, r.RequestURI),
-		"endpoint":   r.RequestURI,
+		"url":        fmt.Sprintf("%s://%s%s", scheme, r.Host, r.RequestURI),
+		"uri":        r.RequestURI,
 		"method":     r.Method,
 		"user_agent": r.UserAgent(),
 	}
