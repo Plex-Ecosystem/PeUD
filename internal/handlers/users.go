@@ -10,7 +10,7 @@ import (
 	v1 "github.com/DirtyCajunRice/PeUD/api/v1"
 )
 
-func ListUser(env *Env, w http.ResponseWriter, r *http.Request) {
+func ListUsers(env *Env, w http.ResponseWriter, r *http.Request) {
 	/**
 	* @api {get} /user Get Users
 	* @apiName GetUser

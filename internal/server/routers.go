@@ -64,7 +64,7 @@ func Start(version, date *string, Env *handlers.Env) {
 			r.Route("/users", func(r chi.Router) {
 				// r.Method(http.MethodGet, "/{id:[0-9]{1,12}", handlers.Handler{Env: Env, Handle:})
 				r.Route("/plex", func(r chi.Router) {
-					r.Method(http.MethodGet, "/", handlers.Handler{Env: Env, Handle: handlers.ListUser})
+					r.Method(http.MethodGet, "/", handlers.Handler{Env: Env, Handle: handlers.ListUsers})
 					r.Method(http.MethodPost, "/", handlers.Handler{Env: Env, Handle: handlers.CreateUsers})
 				})
 			})
