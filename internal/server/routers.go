@@ -13,21 +13,22 @@ import (
 	"github.com/go-chi/render"
 
 	"github.com/DirtyCajunRice/PeUD/internal/handlers"
-	peud_middlware "github.com/DirtyCajunRice/PeUD/internal/middleware"
+	peudMiddleware "github.com/DirtyCajunRice/PeUD/internal/middleware"
 )
 
-func fileServer(r chi.Router, path string) {
-	workDir, _ := os.Getwd()
-	filesDir := http.Dir(filepath.Join(workDir, "docs/api"))
-	if path != "/" && path[len(path)-1] != '/' {
-		r.Get(path, http.RedirectHandler("/api/v1/"+path+"/", 301).ServeHTTP)
-		path += "/"
+func fileServer(r chi.Router, p string, f http.FileSystem) {
+	if strings.ContainsAny(p, "{}*") {
+		panic("FileServer does not permit any URL parameters.")
 	}
-	path += "*"
-	r.Get(path, func(w http.ResponseWriter, r *http.Request) {
-		rctx := chi.RouteContext(r.Context())
-		pathPrefix := strings.TrimSuffix(rctx.RoutePattern(), "/*")
-		fs := http.StripPrefix(pathPrefix, http.FileServer(filesDir))
+	if p != "/" && p[len(p)-1] != '/' {
+		r.Get(p, http.RedirectHandler(p+"/", 301).ServeHTTP)
+		p += "/"
+	}
+	p += "*"
+	r.Get(p, func(w http.ResponseWriter, r *http.Request) {
+		rc := chi.RouteContext(r.Context())
+		pp := strings.TrimSuffix(rc.RoutePattern(), "/*")
+		fs := http.StripPrefix(pp, http.FileServer(f))
 		fs.ServeHTTP(w, r)
 	})
 }
@@ -36,43 +37,36 @@ func Start(Env *handlers.Env) {
 	log := Env.Log
 	config := Env.Config
 	router := chi.NewRouter()
-
 	log.Info("Initializing Server")
-
 	router.Use(
-		// allow recovery from failure
 		middleware.Recoverer,
-		// set timeout for long running commands
 		middleware.Timeout(15*time.Second),
-		// force all render contentType to JSON
 		render.SetContentType(render.ContentTypeJSON),
-		// use requestIDs
 		middleware.RequestID,
-		// use real IPs
 		middleware.RealIP,
-		// enable middleware logger
-		peud_middlware.NewMiddlewareLogger(Env.MiddlewareLog),
-		// enable default compression
+		peudMiddleware.NewMiddlewareLogger(Env.MiddlewareLog),
 		middleware.Compress(5),
-		// redirect slashes to non slashes for endpoints
-		middleware.RedirectSlashes,
 	)
 
-	router.Route("/api", func(r chi.Router) {
-		r.Route("/v1", func(r chi.Router) {
-			r.Method(http.MethodGet, "/version", handlers.Handler{Env: Env, Handle: handlers.Version})
-			fileServer(r, "/doc")
-
-			r.Route("/users", func(r chi.Router) {
-				// r.Method(http.MethodGet, "/{id:[0-9]{1,12}", handlers.Handler{Env: Env, Handle:})
-				r.Route("/{plex,tautulli,organizr,ombi}", func(r chi.Router) {
-					r.Method(http.MethodGet, "/", handlers.Handler{Env: Env, Handle: handlers.ListUsers})
+	workDir, _ := os.Getwd()
+	docs := http.Dir(filepath.Join(workDir, "docs/api"))
+	router.Route("/", func(r chi.Router) {
+		fileServer(r, "/api/docs", docs)
+		r.With(middleware.RedirectSlashes).Route("/api", func(r chi.Router) {
+			r.Route("/v1", func(r chi.Router) {
+				r.Method(http.MethodGet, "/version", handlers.Handler{Env: Env, Handle: handlers.Version})
+				r.Route("/users", func(r chi.Router) {
+					// r.Method(http.MethodGet, "/{id:[0-9]{1,12}", handlers.Handler{Env: Env, Handle:})
+					r.Route("/{plex,tautulli,organizr,ombi}", func(r chi.Router) {
+						r.Method(http.MethodGet, "/", handlers.Handler{Env: Env, Handle: handlers.ListUsers})
+					})
+				})
+				r.Route("/sync", func(r chi.Router) {
+					r.Method(http.MethodPatch, "/", handlers.Handler{Env: Env, Handle: handlers.Sync})
 				})
 			})
-			r.Route("/sync", func(r chi.Router) {
-				r.Method(http.MethodPatch, "/", handlers.Handler{Env: Env, Handle: handlers.Sync})
-			})
 		})
+
 	})
 
 	config.Database.Init()
