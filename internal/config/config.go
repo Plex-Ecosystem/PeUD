@@ -24,6 +24,8 @@ type Authentication struct {
 	TautulliURL   string
 	OrganizrToken string
 	OrganizrURL   string
+	OmbiURL       string
+	OmbiKey       string
 }
 
 func (c *Config) LoadFromEnv() {
@@ -33,5 +35,7 @@ func (c *Config) LoadFromEnv() {
 		TautulliKey:   os.Getenv("TAUTULLI_API_KEY"),
 		OrganizrToken: os.Getenv("ORGANIZR_TOKEN"),
 		OrganizrURL:   os.Getenv("ORGANIZR_URL"),
+		OmbiURL:       os.Getenv("OMBI_URL"),
+		OmbiKey:       os.Getenv("OMBI_API_KEY"),
 	}
 }

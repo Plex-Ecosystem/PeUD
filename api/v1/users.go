@@ -52,3 +52,7 @@ type OrganizrUser struct {
 	RegisterDate string `json:"register_date"`
 	AuthService  string `json:"auth_service"`
 }
+
+type OmbiUser struct {
+	// waiting for reply in discord
+}

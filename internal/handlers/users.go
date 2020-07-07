@@ -71,6 +71,8 @@ func ListUsers(env *Env, w http.ResponseWriter, r *http.Request) {
 		env.toJSON(w, r, env.Config.Database.ListPlexUsers())
 	case "organizr":
 		env.toJSON(w, r, env.Config.Database.ListOrganizrUsers())
+	case "ombi":
+		env.toJSON(w, r, env.Config.Database.ListOmbiUsers())
 	}
 }
 

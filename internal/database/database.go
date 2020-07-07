@@ -78,6 +78,7 @@ func (d *Database) Init() {
 		v1.PlexUser{},
 		v1.TautulliUser{},
 		v1.OrganizrUser{},
+		v1.OmbiUser{},
 	}
 	d.buildTables(tables)
 }
@@ -104,6 +105,15 @@ func (d *Database) ListOrganizrUsers() []*v1.OrganizrUser {
 	log := d.Log.WithField("function", "list")
 	users := make([]*v1.OrganizrUser, 0)
 	if err := d.Select(&users, "SELECT * FROM organizrUsers"); err != nil {
+		log.Error(err)
+	}
+	return users
+}
+
+func (d *Database) ListOmbiUsers() []*v1.OmbiUser {
+	log := d.Log.WithField("function", "list")
+	users := make([]*v1.OmbiUser, 0)
+	if err := d.Select(&users, "SELECT * FROM ombiUsers"); err != nil {
 		log.Error(err)
 	}
 	return users
@@ -154,5 +164,17 @@ func (d *Database) InsertOrganizrUsers(userList []v1.OrganizrUser) error {
 		}
 	}
 	log.Debugf("added users to organizrUsers")
+	return nil
+}
+
+func (d *Database) InsertOmbiUsers(userList []v1.OmbiUser) error {
+	log := d.Log.WithField("function", "add")
+	d.dropRows("ombiUsers")
+	for _, user := range userList {
+		if err := d.Insert(&user); err != nil {
+			log.Error(err)
+		}
+	}
+	log.Debugf("added users to ombiUsers")
 	return nil
 }

@@ -65,7 +65,7 @@ func Start(Env *handlers.Env) {
 
 			r.Route("/users", func(r chi.Router) {
 				// r.Method(http.MethodGet, "/{id:[0-9]{1,12}", handlers.Handler{Env: Env, Handle:})
-				r.Route("/{plex,tautulli,organizr}", func(r chi.Router) {
+				r.Route("/{plex,tautulli,organizr,ombi}", func(r chi.Router) {
 					r.Method(http.MethodGet, "/", handlers.Handler{Env: Env, Handle: handlers.ListUsers})
 				})
 			})

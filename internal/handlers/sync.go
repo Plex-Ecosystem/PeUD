@@ -36,6 +36,9 @@ func Sync(env *Env, w http.ResponseWriter, r *http.Request) {
 	if strings.Contains(filter, "organizr") || filter == "" {
 		syncOrganizr(env)
 	}
+	if strings.Contains(filter, "ombi") || filter == "" {
+		syncOmbi(env)
+	}
 }
 
 func syncPlex(env *Env) {
@@ -125,4 +128,34 @@ func syncOrganizr(env *Env) {
 		log.Error(err)
 	}
 	env.Config.Database.InsertOrganizrUsers(organizrResponse.Data.Users)
+}
+
+func syncOmbi(env *Env) {
+	//log := env.Log
+	//client := &http.Client{}
+	//auth := env.Config.Authentication
+	//req, _ := http.NewRequest("GET", fmt.Sprintf("%s/api?v1/user/list", auth.OrganizrURL), nil)
+	//req.Header.Add("Accept", "application/json")
+	//req.Header.Add("token", auth.OrganizrToken)
+	//start := time.Now()
+	//resp, err := client.Do(req)
+	//if err != nil {
+	//	log.Error(err)
+	//	return
+	//}
+	//log.WithFields(logrus.Fields{
+	//	"request": "upstream",
+	//	"api":     "organizr",
+	//	"took":    time.Since(start).Nanoseconds(),
+	//}).Debug("organizr api call successful")
+	//defer resp.Body.Close()
+	//body, err := ioutil.ReadAll(resp.Body)
+	//if err != nil {
+	//	log.Error(err)
+	//}
+	//organizrResponse := OrganizrResponse{}
+	//if err := json.Unmarshal(body, &organizrResponse); err != nil {
+	//	log.Error(err)
+	//}
+	//env.Config.Database.InsertOrganizrUsers(organizrResponse.Data.Users)
 }
