@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"reflect"
 	"strings"
 	"time"
 
@@ -25,6 +26,66 @@ type OrganizrResponse struct {
 	} `json:"data"`
 }
 
+type OmbiUserResponse struct {
+	ID                  string                   `json:"id" peud:"u,p"`
+	Username            string                   `json:"userName"`
+	Alias               string                   `json:"alias"`
+	Claims              []map[string]interface{} `json:"claims"`
+	EmailAddress        string                   `json:"emailAddress"`
+	Password            string                   `json:"password"`
+	LastLoggedIn        string                   `json:"lastLoggedIn"`
+	Language            string                   `json:"language"`
+	HasLoggedIn         bool                     `json:"hasLoggedIn"`
+	UserType            int                      `json:"userType"`
+	MovieRequestLimit   int                      `json:"movieRequestLimit"`
+	EpisodeRequestLimit int                      `json:"episodeRequestLimit"`
+	EpisodeRequestQuota string                   `json:"episodeRequestQuota"`
+	MovieRequestQuota   string                   `json:"movieRequestQuota"`
+	MusicRequestQuota   string                   `json:"musicRequestQuota"`
+	MusicRequestLimit   int                      `json:"musicRequestLimit"`
+	UserQualityProfiles struct {
+		UserId                    string `json:"userId"`
+		SonarrQualityProfileAnime int    `json:"sonarrQualityProfileAnime"`
+		SonarrRootPathAnime       int    `json:"sonarrRootPathAnime"`
+		SonarrRootPath            int    `json:"sonarrRootPath"`
+		SonarrQualityProfile      int    `json:"sonarrQualityProfile"`
+		RadarrRootPath            int    `json:"radarrRootPath"`
+		RadarrQualityProfile      int    `json:"radarrQualityProfile"`
+		ID                        int    `json:"id"`
+	} `json:"userQualityProfiles"`
+}
+
+func (r *OmbiUserResponse) convertToSane() (u v1.OmbiUser) {
+	u = v1.OmbiUser{
+		ID:                        r.ID,
+		Username:                  r.Username,
+		Alias:                     r.Alias,
+		EmailAddress:              r.EmailAddress,
+		Password:                  r.Password,
+		LastLoggedIn:              r.LastLoggedIn,
+		Language:                  r.Language,
+		HasLoggedIn:               r.HasLoggedIn,
+		UserType:                  r.UserType,
+		MovieRequestLimit:         r.MovieRequestLimit,
+		EpisodeRequestLimit:       r.EpisodeRequestLimit,
+		EpisodeRequestQuota:       r.EpisodeRequestQuota,
+		MovieRequestQuota:         r.MovieRequestQuota,
+		MusicRequestQuota:         r.MovieRequestQuota,
+		MusicRequestLimit:         r.MusicRequestLimit,
+		UserID:                    r.UserQualityProfiles.UserId,
+		SonarrQualityProfileAnime: r.UserQualityProfiles.SonarrQualityProfileAnime,
+		SonarrRootPathAnime:       r.UserQualityProfiles.SonarrRootPathAnime,
+		SonarrRootPath:            r.UserQualityProfiles.SonarrRootPath,
+		SonarrQualityProfile:      r.UserQualityProfiles.SonarrQualityProfile,
+		RadarrRootPath:            r.UserQualityProfiles.RadarrRootPath,
+		RadarrQualityProfile:      r.UserQualityProfiles.RadarrQualityProfile,
+	}
+	for _, k := range r.Claims {
+		reflect.ValueOf(&u).Elem().FieldByName(k["value"].(string)).SetBool(k["enabled"].(bool))
+	}
+	return
+}
+
 func Sync(env *Env, w http.ResponseWriter, r *http.Request) {
 	filter := strings.Split(r.URL.Query().Get("only"), ",")
 	if len(filter) == 0 {
@@ -37,7 +98,9 @@ func Sync(env *Env, w http.ResponseWriter, r *http.Request) {
 
 func sharedRequest(c *http.Client, u string, h map[string][]string, l *logrus.Entry, e string) []byte {
 	r, _ := http.NewRequest("GET", u, nil)
-	r.Header = h
+	if e != "tautulli" {
+		r.Header = h
+	}
 	r.Header.Add("Accept", "application/json")
 	start := time.Now()
 	resp, err := c.Do(r)
@@ -96,5 +159,17 @@ func sync(e string, env *Env) {
 		}
 		db.InsertUsers("organizrUsers", organizrResponse.Data.Users)
 	case "ombi":
+		u := fmt.Sprintf("%s/api/v1/Identity/Users", auth.OmbiURL)
+		h = map[string][]string{"ApiKey": {auth.OmbiKey}}
+		b := sharedRequest(c, u, h, l, e)
+		ombiUserResponse := make([]OmbiUserResponse, 0)
+		ombiUsers := make([]v1.OmbiUser, 0)
+		if err := json.Unmarshal(b, &ombiUserResponse); err != nil {
+			l.Error(err)
+		}
+		for _, r := range ombiUserResponse {
+			ombiUsers = append(ombiUsers, r.convertToSane())
+		}
+		db.InsertUsers("ombiUsers", ombiUsers)
 	}
 }

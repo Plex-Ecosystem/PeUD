@@ -54,5 +54,38 @@ type OrganizrUser struct {
 }
 
 type OmbiUser struct {
-	// waiting for reply in discord
+	ID                        string `json:"id" peud:"u,p"`
+	Username                  string `json:"userName"`
+	Alias                     string `json:"alias"`
+	EmailAddress              string `json:"emailAddress"`
+	Password                  string `json:"password"`
+	LastLoggedIn              string `json:"lastLoggedIn"`
+	Language                  string `json:"language"`
+	HasLoggedIn               bool   `json:"hasLoggedIn"`
+	UserType                  int    `json:"userType"`
+	MovieRequestLimit         int    `json:"movieRequestLimit"`
+	EpisodeRequestLimit       int    `json:"episodeRequestLimit"`
+	EpisodeRequestQuota       string `json:"episodeRequestQuota"`
+	MovieRequestQuota         string `json:"movieRequestQuota"`
+	MusicRequestQuota         string `json:"musicRequestQuota"`
+	MusicRequestLimit         int    `json:"musicRequestLimit"`
+	RequestTv                 bool   `json:"requestTV"`
+	RequestMovie              bool   `json:"requestMovie"`
+	AutoApproveMovie          bool   `json:"autoApproveMovie"`
+	Admin                     bool   `json:"admin"`
+	AutoApproveTv             bool   `json:"autoApproveTv"`
+	AutoApproveMusic          bool   `json:"autoApproveMusic"`
+	RequestMusic              bool   `json:"requestMusic"`
+	PowerUser                 bool   `json:"powerUser"`
+	Disabled                  bool   `json:"disabled"`
+	ReceivesNewsletter        bool   `json:"receivesNewsletter"`
+	ManageOwnRequests         bool   `json:"manageOwnRequests"`
+	EditCustomPage            bool   `json:"editCustomPage"`
+	UserID                    string `json:"userId"`
+	SonarrQualityProfileAnime int    `json:"sonarrQualityProfileAnime"`
+	SonarrRootPathAnime       int    `json:"sonarrRootPathAnime"`
+	SonarrRootPath            int    `json:"sonarrRootPath"`
+	SonarrQualityProfile      int    `json:"sonarrQualityProfile"`
+	RadarrRootPath            int    `json:"radarrRootPath"`
+	RadarrQualityProfile      int    `json:"radarrQualityProfile"`
 }

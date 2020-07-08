@@ -25,11 +25,9 @@ type Database struct {
 func fixColMap(t *modl.TableMap, s interface{}) {
 	v := reflect.TypeOf(s)
 	switch v.Name() {
-	case "PlexUser":
-		t.SetKeys(false, "id")
 	case "TautulliUser":
 		t.SetKeys(false, "rowid")
-	case "OrganizrUser":
+	default:
 		t.SetKeys(false, "id")
 	}
 	for i := 0; i < v.NumField(); i++ {
@@ -79,7 +77,7 @@ func (d *Database) Init() {
 		v1.PlexUser{},
 		v1.TautulliUser{},
 		v1.OrganizrUser{},
-		//v1.OmbiUser{},
+		v1.OmbiUser{},
 	}
 	d.buildTables(tables)
 }
