@@ -91,20 +91,61 @@ func (d *Database) ListUsers(endpoint string) interface{} {
 	switch endpoint {
 	case "plex":
 		users := make([]v1.PlexUser, 0)
-		sqlx.StructScan(rows, &users)
+		if err := sqlx.StructScan(rows, &users); err != nil {
+			log.Error(err)
+		}
 		return users
 	case "tautulli":
 		users := make([]v1.TautulliUser, 0)
-		sqlx.StructScan(rows, &users)
+		if err := sqlx.StructScan(rows, &users); err != nil {
+			log.Error(err)
+		}
 		return users
 	case "organizr":
 		users := make([]v1.OrganizrUser, 0)
-		sqlx.StructScan(rows, &users)
+		if err := sqlx.StructScan(rows, &users); err != nil {
+			log.Error(err)
+		}
 		return users
 	case "ombi":
 		users := make([]v1.OmbiUser, 0)
-		sqlx.StructScan(rows, &users)
+		if err := sqlx.StructScan(rows, &users); err != nil {
+			log.Error(err)
+		}
 		return users
+	default:
+		var placeholder interface{}
+		return placeholder
+	}
+}
+
+func (d *Database) GetUser(endpoint string, id string) interface{} {
+	log := d.Log.WithField("function", "GetUser")
+	switch endpoint {
+	case "plex":
+		user := make([]v1.PlexUser, 0)
+		if err := d.Select(&user, "SELECT * from plexUsers WHERE id = ? LIMIT 1", id); err != nil {
+			log.Error(err)
+		}
+		return user
+	case "tautulli":
+		var user []v1.TautulliUser
+		if err := d.Select(&user, "SELECT * from tautulliUsers WHERE user_id = ? LIMIT 1", id); err != nil {
+			log.Error(err)
+		}
+		return user
+	case "organizr":
+		var user []v1.OrganizrUser
+		if err := d.Select(&user, "SELECT * from organizrUsers WHERE id = ? LIMIT 1", id); err != nil {
+			log.Error(err)
+		}
+		return user
+	case "ombi":
+		var user []v1.OmbiUser
+		if err := d.Select(&user, "SELECT * from ombiUsers WHERE id = ? LIMIT 1", id); err != nil {
+			log.Error(err)
+		}
+		return user
 	default:
 		var placeholder interface{}
 		return placeholder

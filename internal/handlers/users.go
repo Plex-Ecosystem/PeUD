@@ -1,8 +1,11 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
+
+	"github.com/go-chi/chi"
 )
 
 func ListUsers(env *Env, w http.ResponseWriter, r *http.Request) {
@@ -58,7 +61,16 @@ func ListUsers(env *Env, w http.ResponseWriter, r *http.Request) {
 	 */
 	splitPath := strings.Split(r.URL.Path, "/")
 	endpoint := splitPath[len(splitPath)-1]
+	fmt.Println(chi.URLParam(r, "id"))
 	env.toJSON(w, r, env.Config.Database.ListUsers(endpoint))
+}
+
+func GetUser(env *Env, w http.ResponseWriter, r *http.Request) {
+	splitPath := strings.Split(r.URL.Path, "/")
+	endpoint := splitPath[len(splitPath)-2]
+	userID := chi.URLParam(r, "id")
+	env.toJSON(w, r, env.Config.Database.GetUser(endpoint, userID))
+
 }
 
 //func CreateUsers(env *Env, w http.ResponseWriter, r *http.Request) {
