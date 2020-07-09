@@ -10,6 +10,6 @@ func New() *logrus.Logger {
 	logger := logrus.New()
 	logger.Out = os.Stdout
 	logger.Formatter = &logrus.JSONFormatter{}
-	logger.Level = logrus.DebugLevel
+	logger.Level = logrus.TraceLevel
 	return logger
 }

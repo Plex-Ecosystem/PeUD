@@ -1,5 +1,13 @@
 package v1
 
+type User struct {
+	ID              int    `json:"id" peud:"u,p"`
+	Alias           string `json:"alias"`
+	Username        string `json:"username"`
+	Email           string `json:"email"`
+	SharedLibraries string `json:""`
+}
+
 type PlexUser struct {
 	ID          int    `json:"id" peud:"u,p"`
 	Uuid        string `json:"uuid" peud:"u"`

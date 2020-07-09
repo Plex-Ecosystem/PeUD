@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -61,8 +60,7 @@ func ListUsers(env *Env, w http.ResponseWriter, r *http.Request) {
 	 */
 	splitPath := strings.Split(r.URL.Path, "/")
 	endpoint := splitPath[len(splitPath)-1]
-	fmt.Println(chi.URLParam(r, "id"))
-	env.toJSON(w, r, env.Config.Database.ListUsers(endpoint))
+	env.toJSON(w, r, env.Config.Database.ListUsers(endpoint, r.URL.Query()))
 }
 
 func GetUser(env *Env, w http.ResponseWriter, r *http.Request) {

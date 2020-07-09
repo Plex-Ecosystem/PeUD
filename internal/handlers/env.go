@@ -35,7 +35,7 @@ func arrayOrObject(data []byte) (isArray, isObject bool) {
 }
 
 func (e *Env) toJSON(w http.ResponseWriter, r *http.Request, i interface{}, status ...int) {
-	log := e.Log.WithField("function", "tojson")
+	log := e.Log.WithField("function", "toJSON")
 	buffer := &bytes.Buffer{}
 	encoder := json.NewEncoder(buffer)
 	encoder.SetEscapeHTML(true)
@@ -43,11 +43,14 @@ func (e *Env) toJSON(w http.ResponseWriter, r *http.Request, i interface{}, stat
 		log.Error(err)
 		http.Error(w, "Could not marshal response to JSON", http.StatusInternalServerError)
 	}
+	w.Header().Add("Content-Type", "application/json")
 	if len(status) > 0 && status[0] != 0 {
 		w.WriteHeader(status[0])
 	} else {
 		w.WriteHeader(http.StatusOK)
 	}
+
+	log.Tracef("response JSON: %s", buffer.Bytes())
 	if _, err := w.Write(buffer.Bytes()); err != nil {
 		log.Error(err)
 		http.Error(w, "Could not write http response", http.StatusInternalServerError)
