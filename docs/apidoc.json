@@ -8,5 +8,9 @@
   "order": [
     "General",
     "Users"
-  ]
+  ],
+  "template": {
+    "withCompare": false,
+    "withGenerator": false
+  }
 }

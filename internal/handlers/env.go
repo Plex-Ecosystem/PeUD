@@ -56,3 +56,14 @@ func (e *Env) toJSON(w http.ResponseWriter, r *http.Request, i interface{}, stat
 		http.Error(w, "Could not write http response", http.StatusInternalServerError)
 	}
 }
+
+/**
+@apiDefine InternalServerError
+@apiError (500) {Object} response Response object
+@apiError (500) {String} response.error Internal server error
+@apiErrorExample {json} Internal Server Error
+HTTP/1.1 500 Internal Server Error
+{
+  "error": "InternalServerError"
+}
+*/
