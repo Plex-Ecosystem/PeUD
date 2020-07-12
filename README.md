@@ -1,7 +1,7 @@
 # PeUD - Plex ecosystem User Database
 PeUD is in alpha development
 
-### [API Documentation](https://api.peud.io)
+### [API Documentation](https://docs.peud.io)
 
 ## Goals
 * Single api to keep track of all user information on all platforms
