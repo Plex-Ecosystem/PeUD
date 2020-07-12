@@ -1,5 +1,7 @@
 package v1
 
+import "github.com/DirtyCajunRice/go-utility/types"
+
 type Settings struct {
 	TautulliAccess string `json:"tautulliAccess"`
 }
@@ -42,39 +44,39 @@ type PlexUser struct {
 }
 
 type PlexUserServer struct {
-	ID                int    `json:"id" xml:"id,attr"`
-	ServerID          int    `json:"serverId" xml:"serverId,attr"`
-	MachineIdentifier string `json:"machineIdentifier" xml:"machineIdentifier,attr"`
-	Name              string `json:"name" xml:"name,attr"`
-	LastSeenAt        *Time  `json:"lastSeenAt" xml:"lastSeenAt,attr"`
-	NumLibraries      int    `json:"numLibraries" xml:"numLibraries,attr"`
-	AllLibraries      bool   `json:"allLibraries" xml:"allLibraries,attr"`
-	Owned             bool   `json:"owned" xml:"owned,attr"`
-	Pending           bool   `json:"pending" xml:"pending,attr"`
+	ID                int         `json:"id" xml:"id,attr"`
+	ServerID          int         `json:"serverId" xml:"serverId,attr"`
+	MachineIdentifier string      `json:"machineIdentifier" xml:"machineIdentifier,attr"`
+	Name              string      `json:"name" xml:"name,attr"`
+	LastSeenAt        *types.Time `json:"lastSeenAt" xml:"lastSeenAt,attr"`
+	NumLibraries      int         `json:"numLibraries" xml:"numLibraries,attr"`
+	AllLibraries      bool        `json:"allLibraries" xml:"allLibraries,attr"`
+	Owned             bool        `json:"owned" xml:"owned,attr"`
+	Pending           bool        `json:"pending" xml:"pending,attr"`
 }
 
 type TautulliUser struct {
-	RowID            int                `json:"row_id" peud:"u,p"`
-	Username         string             `json:"username" peud:"u"`
-	Email            string             `json:"email" peud:"u"`
-	Thumb            string             `json:"thumb"`
-	FilterAll        string             `json:"filter_all"`
-	FilterMovies     string             `json:"filter_movies"`
-	FilterMusic      string             `json:"filter_music"`
-	FilterPhotos     string             `json:"filter_photos"`
-	FilterTelevision string             `json:"filter_television"`
-	UserID           int                `json:"user_id" peud:"u,p"`
-	FriendlyName     string             `json:"friendly_name"`
-	IsActive         ConvertibleBoolean `json:"is_active"`
-	IsAdmin          ConvertibleBoolean `json:"is_admin"`
-	IsHomeUser       ConvertibleBoolean `json:"is_home_user"`
-	IsAllowSync      ConvertibleBoolean `json:"is_allow_sync"`
-	IsRestricted     ConvertibleBoolean `json:"is_restricted"`
-	DoNotify         ConvertibleBoolean `json:"do_notify"`
-	KeepHistory      ConvertibleBoolean `json:"keep_history"`
-	AllowGuest       ConvertibleBoolean `json:"allow_guest"`
-	ServerToken      string             `json:"server_token"`
-	SharedLibraries  string             `json:"shared_libraries"`
+	RowID            int                      `json:"row_id" peud:"u,p"`
+	Username         string                   `json:"username" peud:"u"`
+	Email            string                   `json:"email" peud:"u"`
+	Thumb            string                   `json:"thumb"`
+	FilterAll        string                   `json:"filter_all"`
+	FilterMovies     string                   `json:"filter_movies"`
+	FilterMusic      string                   `json:"filter_music"`
+	FilterPhotos     string                   `json:"filter_photos"`
+	FilterTelevision string                   `json:"filter_television"`
+	UserID           int                      `json:"user_id" peud:"u,p"`
+	FriendlyName     string                   `json:"friendly_name"`
+	IsActive         types.ConvertibleBoolean `json:"is_active"`
+	IsAdmin          types.ConvertibleBoolean `json:"is_admin"`
+	IsHomeUser       types.ConvertibleBoolean `json:"is_home_user"`
+	IsAllowSync      types.ConvertibleBoolean `json:"is_allow_sync"`
+	IsRestricted     types.ConvertibleBoolean `json:"is_restricted"`
+	DoNotify         types.ConvertibleBoolean `json:"do_notify"`
+	KeepHistory      types.ConvertibleBoolean `json:"keep_history"`
+	AllowGuest       types.ConvertibleBoolean `json:"allow_guest"`
+	ServerToken      string                   `json:"server_token"`
+	SharedLibraries  string                   `json:"shared_libraries"`
 }
 
 type OrganizrUser struct {

@@ -27,13 +27,6 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.Handle(h.Env, w, r)
 }
 
-func arrayOrObject(data []byte) (isArray, isObject bool) {
-	x := bytes.TrimLeft(data, " \t\r\n")
-	isArray = len(x) > 0 && x[0] == '['
-	isObject = len(x) > 0 && x[0] == '{'
-	return
-}
-
 func (e *Env) toJSON(w http.ResponseWriter, r *http.Request, i interface{}, status ...int) {
 	log := e.Log.WithField("function", "toJSON")
 	buffer := &bytes.Buffer{}
@@ -56,14 +49,3 @@ func (e *Env) toJSON(w http.ResponseWriter, r *http.Request, i interface{}, stat
 		http.Error(w, "Could not write http response", http.StatusInternalServerError)
 	}
 }
-
-/**
-@apiDefine InternalServerError
-@apiError (500) {Object} response Response object
-@apiError (500) {String} response.error Internal server error
-@apiErrorExample {json} Internal Server Error
-HTTP/1.1 500 Internal Server Error
-{
-  "error": "InternalServerError"
-}
-*/
