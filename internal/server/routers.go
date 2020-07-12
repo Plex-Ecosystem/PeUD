@@ -53,15 +53,13 @@ func Start(Env *handlers.Env) {
 	router.Route("/", func(r chi.Router) {
 		fileServer(r, "/api/docs", docs)
 		r.With(middleware.RedirectSlashes).Route("/api", func(r chi.Router) {
-			r.Route("/v1", func(r chi.Router) {
-				r.Method(http.MethodGet, "/version", handlers.Handler{Env: Env, Handle: handlers.Version})
-				r.Route("/users", func(r chi.Router) {
-					r.Method(http.MethodGet, "/{plex,tautulli,organizr,ombi}", handlers.Handler{Env: Env, Handle: handlers.ListUsers})
-					r.Method(http.MethodGet, "/{plex,tautulli,organizr,ombi}/{id:[0-9]+}", handlers.Handler{Env: Env, Handle: handlers.GetUser})
-				})
-				r.Route("/sync", func(r chi.Router) {
-					r.Method(http.MethodPatch, "/", handlers.Handler{Env: Env, Handle: handlers.Sync})
-				})
+			r.Method(http.MethodGet, "/version", handlers.Handler{Env: Env, Handle: handlers.Version})
+			r.Route("/users", func(r chi.Router) {
+				r.Method(http.MethodGet, "/{plex,tautulli,organizr,ombi}", handlers.Handler{Env: Env, Handle: handlers.ListUsers})
+				r.Method(http.MethodGet, "/{plex,tautulli,organizr,ombi}/{id:[0-9]+}", handlers.Handler{Env: Env, Handle: handlers.GetUser})
+			})
+			r.Route("/sync", func(r chi.Router) {
+				r.Method(http.MethodPatch, "/", handlers.Handler{Env: Env, Handle: handlers.Sync})
 			})
 		})
 
