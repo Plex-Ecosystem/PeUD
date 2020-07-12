@@ -72,6 +72,23 @@ func (d *Database) ListUsers(endpoint string, urlQuery url.Values) interface{} {
 		if err := sqlx.StructScan(rows, &users); err != nil {
 			log.Error(err)
 		}
+		for i, user := range users {
+			userServers := make([]v1.PlexUserServer, 0)
+			ids := make([]string, 0)
+			for _, server := range user.PlexUserServers {
+				ids = append(ids, fmt.Sprintf("'%v'", server.ID))
+			}
+			subQuery := fmt.Sprintf("SELECT * FROM plexUserServers WHERE id in (%s)", strings.Join(ids, ","))
+			log.Tracef("plexUserServer sub query is: %s", subQuery)
+			if rows, err := d.Db.Query(subQuery); err != nil {
+				log.Error(err)
+			} else {
+				if err := sqlx.StructScan(rows, &userServers); err != nil {
+					log.Error(err)
+				}
+				users[i].PlexUserServers = userServers
+			}
+		}
 		return users
 	case "tautulli":
 		users := make([]v1.TautulliUser, 0)
@@ -135,9 +152,15 @@ func (d *Database) InsertUsers(table string, v interface{}) error {
 	d.dropRows(table)
 	switch x := v.(type) {
 	case []v1.PlexUser:
+		d.dropRows("plexUserServers")
 		for _, user := range x {
 			if err := d.Insert(&user); err != nil {
 				log.Error(err)
+			}
+			for _, server := range user.PlexUserServers {
+				if err := d.Insert(&server); err != nil {
+					log.Error(err)
+				}
 			}
 		}
 	case []v1.OrganizrUser:

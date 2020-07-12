@@ -1,7 +1,17 @@
 package v1
 
+type Settings struct {
+	TautulliAccess string `json:"tautulliAccess"`
+}
+
+func NewSettings() *Settings {
+	return &Settings{
+		TautulliAccess: "global",
+	}
+}
+
 type User struct {
-	ID              int    `json:"id" peud:"u,p"`
+	ID              int    `json:"id" peud:"u,p,a"`
 	Alias           string `json:"alias"`
 	Username        string `json:"username"`
 	Email           string `json:"email"`
@@ -9,19 +19,38 @@ type User struct {
 }
 
 type PlexUser struct {
-	ID          int    `json:"id" peud:"u,p"`
-	Uuid        string `json:"uuid" peud:"u"`
-	HasPassword bool   `json:"hasPassword"`
-	Username    string `json:"username" peud:"u"`
-	Email       string `json:"email" peud:"u"`
-	Thumb       string `json:"thumb"`
-	Title       string `json:"title"`
-	Home        bool   `json:"home"`
-	Restricted  bool   `json:"restricted"`
-	Status      string `json:"status"`
-	Admin       bool   `json:"admin"`
-	Guest       bool   `json:"guest"`
-	Protected   bool   `json:"protected"`
+	ID                        int                 `json:"id" xml:"id,attr" peud:"u,p"`
+	Title                     string              `json:"title" xml:"title,attr"`
+	Username                  string              `json:"username" xml:"username,attr" peud:"u"`
+	Email                     string              `json:"email" xml:"email,attr" peud:"u"`
+	RecommendationsPlaylistId string              `json:"recommendationsPlaylistId" xml:"recommendationsPlaylistId,attr"`
+	Thumb                     string              `json:"thumb" xml:"thumb,attr"`
+	Protected                 bool                `json:"protected" xml:"protected,attr"`
+	Home                      bool                `json:"home" xml:"home,attr"`
+	AllowTuners               bool                `json:"allowTuners" xml:"allowTuners,attr"`
+	AllowSync                 bool                `json:"allowSync" xml:"allowSync,attr"`
+	AllowCameraUpload         bool                `json:"allowCameraUpload" xml:"allowCameraUpload,attr"`
+	AllowChannels             bool                `json:"allowChannels" xml:"allowChannels,attr"`
+	AllowSubtitleAdmin        bool                `json:"allowSubtitleAdmin" xml:"allowSubtitleAdmin,attr"`
+	FilterAll                 string              `json:"filterAll" xml:"filterAll,attr"`
+	FilterMovies              string              `json:"filterMovies" xml:"filterMovies,attr"`
+	FilterMusic               string              `json:"filterMusic" xml:"filterMusic,attr"`
+	FilterPhotos              string              `json:"filterPhotos" xml:"filterPhotos,attr"`
+	FilterTelevision          string              `json:"filterTelevision" xml:"filterTelevision,attr"`
+	Restricted                bool                `json:"restricted" xml:"restricted,attr"`
+	PlexUserServers           PlexUserServerSlice `xml:"Server"`
+}
+
+type PlexUserServer struct {
+	ID                int    `json:"id" xml:"id,attr"`
+	ServerID          int    `json:"serverId" xml:"serverId,attr"`
+	MachineIdentifier string `json:"machineIdentifier" xml:"machineIdentifier,attr"`
+	Name              string `json:"name" xml:"name,attr"`
+	LastSeenAt        *Time  `json:"lastSeenAt" xml:"lastSeenAt,attr"`
+	NumLibraries      int    `json:"numLibraries" xml:"numLibraries,attr"`
+	AllLibraries      bool   `json:"allLibraries" xml:"allLibraries,attr"`
+	Owned             bool   `json:"owned" xml:"owned,attr"`
+	Pending           bool   `json:"pending" xml:"pending,attr"`
 }
 
 type TautulliUser struct {

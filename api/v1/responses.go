@@ -2,6 +2,10 @@ package v1
 
 import "reflect"
 
+type PlexResponse struct {
+	PlexUsers []PlexUser `xml:"User"`
+}
+
 type TautulliResponse struct {
 	Response struct {
 		Data []TautulliUser `json:"data"`

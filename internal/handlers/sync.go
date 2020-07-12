@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -21,6 +22,7 @@ func Sync(env *Env, w http.ResponseWriter, r *http.Request) {
 	for _, i := range filter {
 		sync(i, env)
 	}
+	w.WriteHeader(http.StatusNoContent)
 }
 
 func sharedRequest(c *http.Client, u string, h map[string][]string, l *logrus.Entry, e string) []byte {
@@ -57,17 +59,17 @@ func sync(e string, env *Env) {
 	)
 	switch e {
 	case "plex":
-		u := "https://plex.tv/api/v2/friends"
+		u := "https://plex.tv/api/users"
 		h = map[string][]string{
 			"X-Plex-Client-Identifier": {"PeUD"},
 			"X-Plex-Token":             {auth.PlexToken},
 		}
 		b := sharedRequest(c, u, h, l, e)
-		plexFriends := make([]v1.PlexUser, 0)
-		if err := json.Unmarshal(b, &plexFriends); err != nil {
+		plexResponse := v1.PlexResponse{}
+		if err := xml.Unmarshal(b, &plexResponse); err != nil {
 			l.Error(err)
 		}
-		if err := db.InsertUsers("plexUsers", plexFriends); err != nil {
+		if err := db.InsertUsers("plexUsers", plexResponse.PlexUsers); err != nil {
 			l.Error(err)
 		}
 	case "tautulli":

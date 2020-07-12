@@ -77,6 +77,7 @@ func (d *Database) Init() {
 		v1.TautulliUser{},
 		v1.OrganizrUser{},
 		v1.OmbiUser{},
+		v1.PlexUserServer{},
 	}
 	d.buildTables(tables)
 }
