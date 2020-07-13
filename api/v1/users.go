@@ -40,19 +40,19 @@ type PlexUser struct {
 	FilterPhotos              string              `json:"filterPhotos" xml:"filterPhotos,attr"`
 	FilterTelevision          string              `json:"filterTelevision" xml:"filterTelevision,attr"`
 	Restricted                bool                `json:"restricted" xml:"restricted,attr"`
-	PlexUserServers           PlexUserServerSlice `xml:"Server"`
+	PlexUserServers           PlexUserServerSlice `json:"plexUserServers" xml:"Server"`
 }
 
 type PlexUserServer struct {
-	ID                int         `json:"id" xml:"id,attr"`
-	ServerID          int         `json:"serverId" xml:"serverId,attr"`
-	MachineIdentifier string      `json:"machineIdentifier" xml:"machineIdentifier,attr"`
-	Name              string      `json:"name" xml:"name,attr"`
-	LastSeenAt        *types.Time `json:"lastSeenAt" xml:"lastSeenAt,attr"`
-	NumLibraries      int         `json:"numLibraries" xml:"numLibraries,attr"`
-	AllLibraries      bool        `json:"allLibraries" xml:"allLibraries,attr"`
-	Owned             bool        `json:"owned" xml:"owned,attr"`
-	Pending           bool        `json:"pending" xml:"pending,attr"`
+	ID                int                  `json:"id" xml:"id,attr"`
+	ServerID          int                  `json:"serverId" xml:"serverId,attr"`
+	MachineIdentifier string               `json:"machineIdentifier" xml:"machineIdentifier,attr"`
+	Name              string               `json:"name" xml:"name,attr"`
+	LastSeenAt        *types.UnixTimestamp `json:"lastSeenAt" xml:"lastSeenAt,attr"`
+	NumLibraries      int                  `json:"numLibraries" xml:"numLibraries,attr"`
+	AllLibraries      bool                 `json:"allLibraries" xml:"allLibraries,attr"`
+	Owned             bool                 `json:"owned" xml:"owned,attr"`
+	Pending           bool                 `json:"pending" xml:"pending,attr"`
 }
 
 type TautulliUser struct {
@@ -93,33 +93,42 @@ type OrganizrUser struct {
 }
 
 type OmbiUser struct {
-	ID                        string `json:"id" peud:"u,p"`
-	Username                  string `json:"userName"`
-	Alias                     string `json:"alias"`
-	EmailAddress              string `json:"emailAddress"`
-	Password                  string `json:"password"`
-	LastLoggedIn              string `json:"lastLoggedIn"`
-	Language                  string `json:"language"`
-	HasLoggedIn               bool   `json:"hasLoggedIn"`
-	UserType                  int    `json:"userType"`
-	MovieRequestLimit         int    `json:"movieRequestLimit"`
-	EpisodeRequestLimit       int    `json:"episodeRequestLimit"`
-	EpisodeRequestQuota       string `json:"episodeRequestQuota"`
-	MovieRequestQuota         string `json:"movieRequestQuota"`
-	MusicRequestQuota         string `json:"musicRequestQuota"`
-	MusicRequestLimit         int    `json:"musicRequestLimit"`
-	RequestTv                 bool   `json:"requestTV"`
-	RequestMovie              bool   `json:"requestMovie"`
-	AutoApproveMovie          bool   `json:"autoApproveMovie"`
-	Admin                     bool   `json:"admin"`
-	AutoApproveTv             bool   `json:"autoApproveTv"`
-	AutoApproveMusic          bool   `json:"autoApproveMusic"`
-	RequestMusic              bool   `json:"requestMusic"`
-	PowerUser                 bool   `json:"powerUser"`
-	Disabled                  bool   `json:"disabled"`
-	ReceivesNewsletter        bool   `json:"receivesNewsletter"`
-	ManageOwnRequests         bool   `json:"manageOwnRequests"`
-	EditCustomPage            bool   `json:"editCustomPage"`
+	ID                  string                 `json:"id" peud:"u,p"`
+	Username            string                 `json:"userName"`
+	Alias               string                 `json:"alias"`
+	EmailAddress        string                 `json:"emailAddress"`
+	Password            string                 `json:"password"`
+	LastLoggedIn        string                 `json:"lastLoggedIn"`
+	Language            string                 `json:"language"`
+	HasLoggedIn         bool                   `json:"hasLoggedIn"`
+	UserType            int                    `json:"userType"`
+	MovieRequestLimit   int                    `json:"movieRequestLimit"`
+	EpisodeRequestLimit int                    `json:"episodeRequestLimit"`
+	EpisodeRequestQuota string                 `json:"episodeRequestQuota"`
+	MovieRequestQuota   string                 `json:"movieRequestQuota"`
+	MusicRequestQuota   string                 `json:"musicRequestQuota"`
+	MusicRequestLimit   int                    `json:"musicRequestLimit"`
+	Claims              OmbiUserClaim          `json:"claims"`
+	UserQualityProfiles OmbiUserQualityProfile `json:"userQualityProfiles"`
+}
+
+type OmbiUserClaim struct {
+	UserID             string
+	RequestTv          bool `json:"requestTv"`
+	RequestMovie       bool `json:"requestMovie"`
+	AutoApproveMovie   bool `json:"autoApproveMovie"`
+	Admin              bool `json:"admin"`
+	AutoApproveTv      bool `json:"autoApproveTv"`
+	AutoApproveMusic   bool `json:"autoApproveMusic"`
+	RequestMusic       bool `json:"requestMusic"`
+	PowerUser          bool `json:"powerUser"`
+	Disabled           bool `json:"disabled"`
+	ReceivesNewsletter bool `json:"receivesNewsletter"`
+	ManageOwnRequests  bool `json:"manageOwnRequests"`
+	EditCustomPage     bool `json:"editCustomPage"`
+}
+
+type OmbiUserQualityProfile struct {
 	UserID                    string `json:"userId"`
 	SonarrQualityProfileAnime int    `json:"sonarrQualityProfileAnime"`
 	SonarrRootPathAnime       int    `json:"sonarrRootPathAnime"`
@@ -127,4 +136,5 @@ type OmbiUser struct {
 	SonarrQualityProfile      int    `json:"sonarrQualityProfile"`
 	RadarrRootPath            int    `json:"radarrRootPath"`
 	RadarrQualityProfile      int    `json:"radarrQualityProfile"`
+	ID                        int    `json:"id"`
 }

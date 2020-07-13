@@ -1,6 +1,6 @@
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
-github.com/DirtyCajunRice/go-utility v0.1.0 h1:hj3Cpowu04l5zcckpUsn8WNMLZFyh/3hg31AdwfquPg=
-github.com/DirtyCajunRice/go-utility v0.1.0/go.mod h1:q4D+NKER2ombTFqvmlyz1jgc51a4r3nDwY0SO28Mb2k=
+github.com/DirtyCajunRice/go-utility v0.1.2 h1:uNQI7wRlJgJ4LX7ZQyMjnMu86+GfDIbPqJtEOGXp7OY=
+github.com/DirtyCajunRice/go-utility v0.1.2/go.mod h1:q4D+NKER2ombTFqvmlyz1jgc51a4r3nDwY0SO28Mb2k=
 github.com/PuerkitoBio/goquery v1.5.1/go.mod h1:GsLWisAFVj4WgDibEWF4pvYnkVQBpKBKeU+7zCJoLcc=
 github.com/andybalholm/cascadia v1.1.0/go.mod h1:GsXiBklL0woXo1j/WYWtSYYC4ouU9PqHO0sqidkEA4Y=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d h1:U+s90UTSYgptZMwQh2aRr3LuazLJIa+Pg3Kc1ylSYVY=

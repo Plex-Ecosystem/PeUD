@@ -26,6 +26,8 @@ func fixColMap(t *modl.TableMap, s interface{}) {
 	switch v.Name() {
 	case "TautulliUser":
 		t.SetKeys(false, "rowid")
+	case "OmbiUserQualityProfile", "OmbiUserClaim":
+		t.SetKeys(false, "userid")
 	default:
 		t.SetKeys(false, "id")
 	}
@@ -74,10 +76,12 @@ func (d *Database) Init() {
 	// create tables
 	tables := []interface{}{
 		v1.PlexUser{},
+		v1.PlexUserServer{},
 		v1.TautulliUser{},
 		v1.OrganizrUser{},
 		v1.OmbiUser{},
-		v1.PlexUserServer{},
+		v1.OmbiUserClaim{},
+		v1.OmbiUserQualityProfile{},
 	}
 	d.buildTables(tables)
 }

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
@@ -51,7 +52,11 @@ func sharedRequest(c *http.Client, u string, h map[string][]string, l *logrus.En
 
 func sync(e string, env *Env) {
 	l := env.Log
-	c := &http.Client{}
+	// TODO: switch this to a env option
+	t := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	c := &http.Client{Transport: t}
 	var (
 		auth = env.Config.Authentication
 		db   = env.Config.Database
@@ -97,13 +102,9 @@ func sync(e string, env *Env) {
 		u := fmt.Sprintf("%s/api/v1/Identity/Users", auth.OmbiURL)
 		h = map[string][]string{"ApiKey": {auth.OmbiKey}}
 		b := sharedRequest(c, u, h, l, e)
-		ombiUserResponse := make([]v1.OmbiUserResponse, 0)
 		ombiUsers := make([]v1.OmbiUser, 0)
-		if err := json.Unmarshal(b, &ombiUserResponse); err != nil {
+		if err := json.Unmarshal(b, &ombiUsers); err != nil {
 			l.Error(err)
-		}
-		for _, r := range ombiUserResponse {
-			ombiUsers = append(ombiUsers, r.ConvertToSane())
 		}
 		if err := db.InsertUsers("ombiUsers", ombiUsers); err != nil {
 			l.Error(err)

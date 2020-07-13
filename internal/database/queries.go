@@ -85,8 +85,41 @@ func (d *Database) ListUsers(endpoint string, urlQuery url.Values) interface{} {
 			} else {
 				if err := sqlx.StructScan(rows, &userServers); err != nil {
 					log.Error(err)
+				} else {
+					users[i].PlexUserServers = userServers
 				}
-				users[i].PlexUserServers = userServers
+			}
+		}
+		return users
+	case "ombi":
+		users := make([]v1.OmbiUser, 0)
+		if err := sqlx.StructScan(rows, &users); err != nil {
+			log.Error(err)
+		}
+		for i, user := range users {
+			var claim v1.OmbiUserClaim
+			var qualityProfile v1.OmbiUserQualityProfile
+			if rows, err := d.Dbx.Queryx("SELECT * FROM ombiUserClaims WHERE userid=?", user.ID); err != nil {
+				log.Error(err)
+			} else {
+				for rows.Next() {
+					if err := rows.StructScan(&claim); err != nil {
+						log.Error(err)
+					} else {
+						users[i].Claims = claim
+					}
+				}
+			}
+			if rows, err := d.Dbx.Queryx("SELECT * FROM ombiUserQualityProfiles WHERE userid=?", user.ID); err != nil {
+				log.Error(err)
+			} else {
+				for rows.Next() {
+					if err := rows.StructScan(&qualityProfile); err != nil {
+						log.Error(err)
+					} else {
+						users[i].UserQualityProfiles = qualityProfile
+					}
+				}
 			}
 		}
 		return users
@@ -98,12 +131,6 @@ func (d *Database) ListUsers(endpoint string, urlQuery url.Values) interface{} {
 		return users
 	case "organizr":
 		users := make([]v1.OrganizrUser, 0)
-		if err := sqlx.StructScan(rows, &users); err != nil {
-			log.Error(err)
-		}
-		return users
-	case "ombi":
-		users := make([]v1.OmbiUser, 0)
 		if err := sqlx.StructScan(rows, &users); err != nil {
 			log.Error(err)
 		}
@@ -165,12 +192,22 @@ func (d *Database) InsertUsers(table string, v interface{}) error {
 		}
 	case []v1.OrganizrUser:
 		for _, user := range x {
+
 			if err := d.Insert(&user); err != nil {
 				log.Error(err)
 			}
 		}
 	case []v1.OmbiUser:
+		d.dropRows("ombiUserClaims")
+		d.dropRows("ombiUserQualityProfiles")
 		for _, user := range x {
+			user.Claims.UserID = user.ID
+			if err := d.Insert(&user.Claims); err != nil {
+				log.Error(err)
+			}
+			if err := d.Insert(&user.UserQualityProfiles); err != nil {
+				log.Error(err)
+			}
 			if err := d.Insert(&user); err != nil {
 				log.Error(err)
 			}
