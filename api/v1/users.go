@@ -3,23 +3,36 @@ package v1
 import "github.com/DirtyCajunRice/go-utility/types"
 
 type Settings struct {
-	TautulliAccess string `json:"tautulliAccess"`
+	GlobalTautulliAccess bool `json:"globalTautulliAccess"`
 }
 
 func NewSettings() *Settings {
 	return &Settings{
-		TautulliAccess: "global",
+		GlobalTautulliAccess: false, // opts: global/user
 	}
 }
 
 type User struct {
-	ID              int    `json:"id" peud:"u,p,a"`
-	Alias           string `json:"alias"`
-	Username        string `json:"username"`
-	Email           string `json:"email"`
-	SharedLibraries string `json:""`
+	ID              int     `json:"id" peud:"u,p,a"`
+	Alias           string  `json:"alias"`
+	Username        string  `json:"username"`
+	SharedLibraries string  `json:"sharedLibraries"`
+	Contact         Contact `json:"contact"`
 }
 
+type Contact struct {
+	Email       string `json:"email"`
+	PlexEmail   string `json:"plexEmail"`
+	PhoneNumber string `json:"phoneNumber"`
+	Discord     string `json:"discord"`
+	Pushbullet  string `json:"pushbullet"`
+	Pushover    string `json:"pushover"`
+	Telegram    string `json:"telegram"`
+	Slack       string `json:"slack"`
+	Mattermost  string `json:"mattermost"`
+	Gotify      string `json:"gotify"`
+	WhatsApp    string `json:"whatsApp"`
+}
 type PlexUser struct {
 	ID                        int                 `json:"id" xml:"id,attr" peud:"u,p"`
 	Title                     string              `json:"title" xml:"title,attr"`
@@ -113,19 +126,19 @@ type OmbiUser struct {
 }
 
 type OmbiUserClaim struct {
-	UserID             string
-	RequestTv          bool `json:"requestTv"`
-	RequestMovie       bool `json:"requestMovie"`
-	AutoApproveMovie   bool `json:"autoApproveMovie"`
-	Admin              bool `json:"admin"`
-	AutoApproveTv      bool `json:"autoApproveTv"`
-	AutoApproveMusic   bool `json:"autoApproveMusic"`
-	RequestMusic       bool `json:"requestMusic"`
-	PowerUser          bool `json:"powerUser"`
-	Disabled           bool `json:"disabled"`
-	ReceivesNewsletter bool `json:"receivesNewsletter"`
-	ManageOwnRequests  bool `json:"manageOwnRequests"`
-	EditCustomPage     bool `json:"editCustomPage"`
+	UserID             string `json:"-"`
+	RequestTv          bool   `json:"requestTv"`
+	RequestMovie       bool   `json:"requestMovie"`
+	AutoApproveMovie   bool   `json:"autoApproveMovie"`
+	Admin              bool   `json:"admin"`
+	AutoApproveTv      bool   `json:"autoApproveTv"`
+	AutoApproveMusic   bool   `json:"autoApproveMusic"`
+	RequestMusic       bool   `json:"requestMusic"`
+	PowerUser          bool   `json:"powerUser"`
+	Disabled           bool   `json:"disabled"`
+	ReceivesNewsletter bool   `json:"receivesNewsletter"`
+	ManageOwnRequests  bool   `json:"manageOwnRequests"`
+	EditCustomPage     bool   `json:"editCustomPage"`
 }
 
 type OmbiUserQualityProfile struct {
