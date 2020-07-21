@@ -1,9 +1,8 @@
 package tautulli
 
-type Response struct {
-	Result  string   `json:"result"`
-	Message string   `json:"message"`
-	Data    Settings `json:"data"`
+type SettingsResponse struct {
+	BaseResponse
+	Data Settings `json:"data"`
 }
 type Settings struct {
 	IFTTT      IFTTT      `json:"IFTTT"`
