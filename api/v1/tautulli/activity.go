@@ -4,6 +4,10 @@ type ActivityResponse struct {
 	BaseResponse
 	Activity Activity `json:"data"`
 }
+type SessionResponse struct {
+	BaseResponse
+	Session Session `json:"data"`
+}
 type Activity struct {
 	StreamCount             string    `json:"stream_count"`
 	Sessions                []Session `json:"sessions"`
