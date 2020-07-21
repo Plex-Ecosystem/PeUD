@@ -1,27 +1,20 @@
 package radarr
 
-import "time"
+import (
+	"github.com/DirtyCajunRice/PeUD/api/v1/common"
+)
 
 type HistoryResponse struct {
-	Page          int       `json:"page"`
-	PageSize      int       `json:"pageSize"`
-	SortKey       string    `json:"sortKey"`
-	SortDirection string    `json:"sortDirection"`
-	TotalRecords  int       `json:"totalRecords"`
-	History       []History `json:"records"`
+	common.ResponseWrapper
+	History []Entry `json:"records"`
 }
-type History struct {
-	MovieID             int               `json:"movieId"`
-	SourceTitle         string            `json:"sourceTitle"`
-	Languages           []Language        `json:"languages"`
-	QualityDefinition   QualityDefinition `json:"quality"`
-	CustomFormats       []CustomFormat    `json:"customFormats"`
-	QualityCutoffNotMet bool              `json:"qualityCutoffNotMet"`
-	Date                time.Time         `json:"date"`
-	DownloadID          string            `json:"downloadId,omitempty"`
-	EventType           string            `json:"eventType"`
-	Action              Action            `json:"data,omitempty"`
-	ID                  int               `json:"id"`
+type Entry struct {
+	MovieID           int               `json:"movieId"`
+	SourceTitle       string            `json:"sourceTitle"`
+	Languages         []common.Language `json:"languages"`
+	QualityDefinition QualityDefinition `json:"quality"`
+	CustomFormats     []CustomFormat    `json:"customFormats"`
+	common.Entry
 }
 type CustomFormat struct {
 	ID                              int             `json:"id"`
@@ -52,9 +45,6 @@ type SelectOption struct {
 	Name  string `json:"name"`
 }
 type Action struct {
-	DroppedPath        string `json:"droppedPath"`
-	ImportedPath       string `json:"importedPath"`
-	DownloadClient     string `json:"downloadClient"`
-	DownloadClientName string `json:"downloadClientName"`
-	Reason             string `json:"reason"`
+	common.Action
+	Reason string `json:"reason"`
 }

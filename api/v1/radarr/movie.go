@@ -1,6 +1,10 @@
 package radarr
 
-import "time"
+import (
+	"time"
+
+	"github.com/DirtyCajunRice/PeUD/api/v1/common"
+)
 
 type Movie struct {
 	Title                 string           `json:"title"`
@@ -12,7 +16,7 @@ type Movie struct {
 	Overview              string           `json:"overview"`
 	InCinemas             time.Time        `json:"inCinemas"`
 	PhysicalRelease       time.Time        `json:"physicalRelease"`
-	Images                []Image          `json:"images"`
+	Images                []common.Image   `json:"images"`
 	Website               string           `json:"website"`
 	Year                  int              `json:"year"`
 	HasFile               bool             `json:"hasFile"`
@@ -33,32 +37,21 @@ type Movie struct {
 	Genres                []string         `json:"genres"`
 	Tags                  []string         `json:"tags"`
 	Added                 time.Time        `json:"added"`
-	Ratings               Ratings          `json:"ratings"`
+	Ratings               common.Ratings   `json:"ratings"`
 	MovieFile             MovieFile        `json:"movieFile"`
 	ID                    int              `json:"id"`
 }
 type AlternateTitle struct {
-	SourceType string   `json:"sourceType"`
-	MovieID    int      `json:"movieId"`
-	Title      string   `json:"title"`
-	SourceID   int      `json:"sourceId"`
-	Votes      int      `json:"votes"`
-	VoteCount  int      `json:"voteCount"`
-	Language   Language `json:"language"`
-	ID         int      `json:"id"`
+	SourceType string          `json:"sourceType"`
+	MovieID    int             `json:"movieId"`
+	Title      string          `json:"title"`
+	SourceID   int             `json:"sourceId"`
+	Votes      int             `json:"votes"`
+	VoteCount  int             `json:"voteCount"`
+	Language   common.Language `json:"language"`
+	ID         int             `json:"id"`
 }
-type Language struct {
-	ID   int    `json:"id"`
-	Name string `json:"name"`
-}
-type Image struct {
-	CoverType string `json:"coverType"`
-	URL       string `json:"url"`
-}
-type Ratings struct {
-	Votes int     `json:"votes"`
-	Value float64 `json:"value"`
-}
+
 type MovieFile struct {
 	MovieID             int               `json:"movieId"`
 	RelativePath        string            `json:"relativePath"`
@@ -70,38 +63,18 @@ type MovieFile struct {
 	QualityDefinition   QualityDefinition `json:"quality"`
 	MediaInfo           MediaInfo         `json:"mediaInfo"`
 	QualityCutoffNotMet bool              `json:"qualityCutoffNotMet"`
-	Languages           []Language        `json:"languages"`
+	Languages           []common.Language `json:"languages"`
 	ID                  int               `json:"id"`
 }
 type QualityDefinition struct {
-	Quality  Quality  `json:"quality"`
-	Revision Revision `json:"revision"`
+	Quality Quality `json:"quality"`
+	common.QualityDefinition
 }
 type Quality struct {
-	ID         int    `json:"id"`
-	Name       string `json:"name"`
-	Source     string `json:"source"`
-	Resolution int    `json:"resolution"`
-	Modifier   string `json:"modifier"`
-}
-type Revision struct {
-	Version  int  `json:"version"`
-	Real     int  `json:"real"`
-	IsRepack bool `json:"isRepack"`
+	common.Quality
+	Modifier string `json:"modifier"`
 }
 type MediaInfo struct {
-	AudioAdditionalFeatures string  `json:"audioAdditionalFeatures"`
-	AudioBitrate            int     `json:"audioBitrate"`
-	AudioChannels           float64 `json:"audioChannels"`
-	AudioCodec              string  `json:"audioCodec"`
-	AudioLanguages          string  `json:"audioLanguages"`
-	AudioStreamCount        int     `json:"audioStreamCount"`
-	VideoBitDepth           int     `json:"videoBitDepth"`
-	VideoBitrate            int     `json:"videoBitrate"`
-	VideoCodec              string  `json:"videoCodec"`
-	VideoFps                float64 `json:"videoFps"`
-	Resolution              string  `json:"resolution"`
-	RunTime                 string  `json:"runTime"`
-	ScanType                string  `json:"scanType"`
-	Subtitles               string  `json:"subtitles"`
+	AudioAdditionalFeatures string `json:"audioAdditionalFeatures"`
+	common.MediaInfo
 }
