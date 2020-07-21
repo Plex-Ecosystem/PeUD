@@ -1,5 +1,39 @@
 package tautulli
 
+type Response struct {
+	Result  string   `json:"result"`
+	Message string   `json:"message"`
+	Data    Settings `json:"data"`
+}
+type Settings struct {
+	IFTTT      IFTTT      `json:"IFTTT"`
+	Growl      Growl      `json:"Growl"`
+	PMS        PMS        `json:"PMS"`
+	Monitoring Monitoring `json:"Monitoring"`
+	General    General    `json:"General"`
+	Slack      Slack      `json:"Slack"`
+	Boxcar     Boxcar     `json:"Boxcar"`
+	PushBullet PushBullet `json:"PushBullet"`
+	Scripts    Scripts    `json:"Scripts"`
+	OSXNotify  OSXNotify  `json:"OSX_Notify"`
+	NMA        NMA        `json:"NMA"`
+	Hipchat    Hipchat    `json:"Hipchat"`
+	Pushalot   Pushalot   `json:"Pushalot"`
+	Prowl      Prowl      `json:"Prowl"`
+	Advanced   Advanced   `json:"Advanced"`
+	Facebook   Facebook   `json:"Facebook"`
+	Email      Email      `json:"Email"`
+	PlexWatch  PlexWatch  `json:"PlexWatch"`
+	Pushover   Pushover   `json:"Pushover"`
+	Telegram   Telegram   `json:"Telegram"`
+	Twitter    Twitter    `json:"Twitter"`
+	Plex       Plex       `json:"Plex"`
+	Join       Join       `json:"Join"`
+	XBMC       XBMC       `json:"XBMC"`
+	Newsletter Newsletter `json:"Newsletter"`
+	Browser    Browser    `json:"Browser"`
+	Cloudinary Cloudinary `json:"Cloudinary"`
+}
 type IFTTT struct {
 	IFTTTOnStop       bool   `json:"ifttt_on_stop"`
 	IFTTTOnPause      bool   `json:"ifttt_on_pause"`
@@ -666,38 +700,4 @@ type Cloudinary struct {
 	CloudinaryAPIKey    string `json:"cloudinary_api_key"`
 	CloudinaryCloudName string `json:"cloudinary_cloud_name"`
 	CloudinaryAPISecret string `json:"cloudinary_api_secret"`
-}
-type Data struct {
-	IFTTT      IFTTT      `json:"IFTTT"`
-	Growl      Growl      `json:"Growl"`
-	PMS        PMS        `json:"PMS"`
-	Monitoring Monitoring `json:"Monitoring"`
-	General    General    `json:"General"`
-	Slack      Slack      `json:"Slack"`
-	Boxcar     Boxcar     `json:"Boxcar"`
-	PushBullet PushBullet `json:"PushBullet"`
-	Scripts    Scripts    `json:"Scripts"`
-	OSXNotify  OSXNotify  `json:"OSX_Notify"`
-	NMA        NMA        `json:"NMA"`
-	Hipchat    Hipchat    `json:"Hipchat"`
-	Pushalot   Pushalot   `json:"Pushalot"`
-	Prowl      Prowl      `json:"Prowl"`
-	Advanced   Advanced   `json:"Advanced"`
-	Facebook   Facebook   `json:"Facebook"`
-	Email      Email      `json:"Email"`
-	PlexWatch  PlexWatch  `json:"PlexWatch"`
-	Pushover   Pushover   `json:"Pushover"`
-	Telegram   Telegram   `json:"Telegram"`
-	Twitter    Twitter    `json:"Twitter"`
-	Plex       Plex       `json:"Plex"`
-	Join       Join       `json:"Join"`
-	XBMC       XBMC       `json:"XBMC"`
-	Newsletter Newsletter `json:"Newsletter"`
-	Browser    Browser    `json:"Browser"`
-	Cloudinary Cloudinary `json:"Cloudinary"`
-}
-type Response struct {
-	Result  string `json:"result"`
-	Message string `json:"message"`
-	Data    Data   `json:"data"`
 }
